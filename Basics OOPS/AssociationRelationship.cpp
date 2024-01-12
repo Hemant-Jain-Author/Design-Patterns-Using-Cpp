@@ -1,48 +1,51 @@
-import java.util.ArrayList;
-import java.util.List;
+#include <iostream>
+#include <vector>
 
 class Student {
-    private String name;
+private:
+    std::string name;
 
-    public Student(String name) {
-        this.name = name;
-    }
+public:
+    Student(const std::string& name) : name(name) {}
 
-    @Override
-    public String toString() {
-        return "Student: " + name;
+    friend std::ostream& operator<<(std::ostream& os, const Student& student) {
+        os << "Student: " << student.name;
+        return os;
     }
-}
+};
 
 class SchoolClass {
-    private String className;
-    private List<Student> students;
+private:
+    std::string className;
+    std::vector<Student> students;
 
-    public SchoolClass(String className) {
-        this.className = className;
-        this.students = new ArrayList<>();
+public:
+    SchoolClass(const std::string& className) : className(className) {}
+
+    void addStudent(const Student& student) {
+        students.push_back(student);
     }
 
-    public void addStudent(Student student) {
-        students.add(student);
-    }
-
-    public void display() {
-        for (Student student : students) {
-            System.out.println(student);
+    void display() const {
+        for (const Student& student : students) {
+            std::cout << student << std::endl;
         }
     }
+};
+
+int main() {
+    SchoolClass schoolClass("SS1");
+    Student student1("John Smith");
+    Student student2("Jane Smith");
+
+    schoolClass.addStudent(student1);
+    schoolClass.addStudent(student2);
+
+    schoolClass.display();
+
+    return 0;
 }
-
-public class AssociationRelationship {
-    public static void main(String[] args) {
-        SchoolClass schoolClass = new SchoolClass("SS1");
-        Student student1 = new Student("John Smith");
-        Student student2 = new Student("Jane Smith");
-
-        schoolClass.addStudent(student1);
-        schoolClass.addStudent(student2);
-
-        schoolClass.display();
-    }
-}
+/*
+Student: John Smith
+Student: Jane Smith
+*/

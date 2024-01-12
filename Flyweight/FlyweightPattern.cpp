@@ -1,55 +1,65 @@
-import java.util.HashMap;
-import java.util.Map;
+#include <iostream>
+#include <unordered_map>
 
 // Flyweight interface
-interface Flyweight {
-    void operation(Object extrinsicState);
-}
+class Flyweight {
+public:
+    virtual void operation(const void* extrinsicState) = 0;
+};
 
 // Concrete Flyweight class
-class ConcreteFlyweight implements Flyweight {
-    private String intrinsicState;
+class ConcreteFlyweight : public Flyweight {
+private:
+    std::string intrinsicState;
 
-    public ConcreteFlyweight(String intrinsicState) {
-        this.intrinsicState = intrinsicState;
-    }
+public:
+    ConcreteFlyweight(const std::string& intrinsicState) : intrinsicState(intrinsicState) {}
 
-    @Override
-    public void operation(Object extrinsicState) {
-        System.out.println("Operation inside concrete flyweight");
+    void operation(const void* extrinsicState) override {
+        std::cout << "Operation inside concrete flyweight" << std::endl;
     }
-}
+};
 
 // FlyweightFactory class
 class FlyweightFactory {
-    private Map<String, Flyweight> flyweights = new HashMap<>();
+private:
+    std::unordered_map<std::string, Flyweight*> flyweights;
 
-    public Flyweight getFlyweight(String key) {
-        if (!flyweights.containsKey(key)) {
-            flyweights.put(key, new ConcreteFlyweight(key));
+public:
+    Flyweight* getFlyweight(const std::string& key) {
+        if (flyweights.find(key) == flyweights.end()) {
+            flyweights[key] = new ConcreteFlyweight(key);
         }
-        return flyweights.get(key);
+        return flyweights[key];
     }
 
-    public int getCount() {
+    int getCount() const {
         return flyweights.size();
     }
-}
+
+    ~FlyweightFactory() {
+        for (const auto& entry : flyweights) {
+            delete entry.second;
+        }
+    }
+};
 
 // Client code
-public class FlyweightPattern {
-    public static void main(String[] args) {
-        FlyweightFactory factory = new FlyweightFactory();
-        Flyweight flyweight1 = factory.getFlyweight("key");
-        Flyweight flyweight2 = factory.getFlyweight("key");
-        flyweight1.operation(null);
-        System.out.println(flyweight1 + " " + flyweight2);
-        System.out.println("Object count: " + factory.getCount());
-    }
+int main() {
+    FlyweightFactory factory;
+    Flyweight* flyweight1 = factory.getFlyweight("key");
+    Flyweight* flyweight2 = factory.getFlyweight("key");
+
+    flyweight1->operation(nullptr);
+
+    std::cout << flyweight1 << " " << flyweight2 << std::endl;
+    std::cout << "Object count: " << factory.getCount() << std::endl;
+
+    return 0;
 }
 
-/* 
+/*
 Operation inside concrete flyweight
-ConcreteFlyweight@73d16e93 ConcreteFlyweight@73d16e93
+0x55990ff3beb0 0x55990ff3beb0
 Object count: 1
 */

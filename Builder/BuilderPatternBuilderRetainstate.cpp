@@ -1,74 +1,81 @@
+#include <iostream>
+
 class Product {
-    private String partA;
-    private String partB;
+private:
+    std::string partA;
+    std::string partB;
 
-    public Product(String A, String B) {
-        this.partA = A;
-        this.partB = B;
+public:
+    Product(const std::string& A, const std::string& B) : partA(A), partB(B) {}
+
+    friend std::ostream& operator<<(std::ostream& os, const Product& product) {
+        os << "Product: (" << product.partA << ", " << product.partB << ")";
+        return os;
     }
+};
 
-    @Override
-    public String toString() {
-        return "Product : (" + partA + ", " + partB + ")";
-    }
-}
+class Builder {
+public:
+    virtual Builder* setPartA(const std::string& A) = 0;
+    virtual Builder* setPartB(const std::string& B) = 0;
+    virtual Product getProduct() = 0;
+    virtual ~Builder() {} // Virtual destructor for proper cleanup
+};
 
-abstract class Builder {
-    public abstract Builder setPartA(String A);
-    public abstract Builder setPartB(String B);
-    public abstract Product getProduct();
-}
+class ConcreteBuilder : public Builder {
+private:
+    std::string partA;
+    std::string partB;
 
-class ConcreteBuilder extends Builder {
-    private String partA;
-    private String partB;
-
-    @Override
-    public ConcreteBuilder setPartA(String A) {
-        this.partA = A;
+public:
+    Builder* setPartA(const std::string& A) override {
+        this->partA = A;
         return this; // Returning self helps in chaining calls.
     }
 
-    @Override
-    public ConcreteBuilder setPartB(String B) {
-        this.partB = B;
+    Builder* setPartB(const std::string& B) override {
+        this->partB = B;
         return this;
     }
 
-    @Override
-    public Product getProduct() {
-        return new Product(partA, partB);
+    Product getProduct() override {
+        return Product(partA, partB);
     }
-}
+};
 
 class Director {
-    private Builder builder;
+private:
+    Builder* builder;
 
-    public Director(Builder builder) {
-        this.builder = builder;
+public:
+    Director(Builder* builder) : builder(builder) {}
+
+    Product construct() {
+        return builder->setPartA("A1")->setPartB("B1")->getProduct(); // Chaining calls
     }
 
-    public Product construct() {
-        return builder.setPartA("A1").setPartB("B1").getProduct(); // Chaining calls
+    Product construct2() {
+        builder->setPartA("A2");
+        builder->setPartB("B2");
+        return builder->getProduct();
     }
-
-    public Product construct2() {
-        builder.setPartA("A2");
-        builder.setPartB("B2");
-        return builder.getProduct();
-    }
-}
+};
 
 // Client code
-public class BuilderPatternBuilderRetainstate {
-    public static void main(String[] args) {
-        ConcreteBuilder builder = new ConcreteBuilder();
-        Director director = new Director(builder);
+int main() {
+    ConcreteBuilder builder;
+    Director director(&builder);
 
-        Product product = director.construct();
-        System.out.println(product);
+    Product product = director.construct();
+    std::cout << product << std::endl;
 
-        Product product2 = director.construct2();
-        System.out.println(product2);
-    }
+    Product product2 = director.construct2();
+    std::cout << product2 << std::endl;
+
+    return 0;
 }
+
+/*
+Product: (A1, B1)
+Product: (A2, B2)
+*/

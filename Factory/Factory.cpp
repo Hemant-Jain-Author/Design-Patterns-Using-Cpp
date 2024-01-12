@@ -1,57 +1,66 @@
+#include <iostream>
+
 // Product interface
-interface Animal {
-    void speak();
-}
+class Animal {
+public:
+    virtual void speak() = 0;
+};
 
 // Concrete Product classes
-class Dog implements Animal {
-    @Override
-    public void speak() {
-        System.out.println("Woof!");
+class Dog : public Animal {
+public:
+    void speak() override {
+        std::cout << "Woof!" << std::endl;
     }
-}
+};
 
-class Cat implements Animal {
-    @Override
-    public void speak() {
-        System.out.println("Meow!");
+class Cat : public Animal {
+public:
+    void speak() override {
+        std::cout << "Meow!" << std::endl;
     }
-}
+};
 
 // Creator abstract class
-abstract class AnimalFactory {
-    public abstract Animal createAnimal();
-}
+class AnimalFactory {
+public:
+    virtual Animal* createAnimal() = 0;
+};
 
 // Concrete Creator classes
-class DogFactory extends AnimalFactory {
-    @Override
-    public Animal createAnimal() {
+class DogFactory : public AnimalFactory {
+public:
+    Animal* createAnimal() override {
         return new Dog();
     }
-}
+};
 
-class CatFactory extends AnimalFactory {
-    @Override
-    public Animal createAnimal() {
+class CatFactory : public AnimalFactory {
+public:
+    Animal* createAnimal() override {
         return new Cat();
     }
-}
+};
 
 // Client code
-public class Factory {
-    public static void main(String[] args) {
-        AnimalFactory dogFactory = new DogFactory();
-        Animal dog = dogFactory.createAnimal();
-        dog.speak();
+int main() {
+    AnimalFactory* dogFactory = new DogFactory();
+    Animal* dog = dogFactory->createAnimal();
+    dog->speak();
 
-        AnimalFactory catFactory = new CatFactory();
-        Animal cat = catFactory.createAnimal();
-        cat.speak();
-    }
+    AnimalFactory* catFactory = new CatFactory();
+    Animal* cat = catFactory->createAnimal();
+    cat->speak();
+
+    delete dog;
+    delete cat;
+    delete dogFactory;
+    delete catFactory;
+
+    return 0;
 }
 
 /*
 Woof!
 Meow!
- */
+*/

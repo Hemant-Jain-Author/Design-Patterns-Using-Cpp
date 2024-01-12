@@ -1,29 +1,43 @@
-interface Subject {
-    void request();
-}
+#include <iostream>
 
-class RealSubject implements Subject {
-    @Override
-    public void request() {
-        System.out.println("Concrete Subject Request Method");
+class Subject {
+public:
+    virtual void request() = 0;
+};
+
+class RealSubject : public Subject {
+public:
+    void request() override {
+        std::cout << "Concrete Subject Request Method" << std::endl;
     }
-}
+};
 
-class Proxy implements Subject {
-    private RealSubject realSubject;
+class Proxy : public Subject {
+private:
+    RealSubject* realSubject;
 
-    @Override
-    public void request() {
-        if (realSubject == null) {
+public:
+    Proxy() : realSubject(nullptr) {}
+
+    void request() override {
+        if (realSubject == nullptr) {
             realSubject = new RealSubject(); // Lazy Initialization
         }
-        realSubject.request();
+        realSubject->request();
     }
+
+    ~Proxy() {
+        delete realSubject; // Clean up allocated memory
+    }
+};
+
+int main() {
+    Proxy proxy;
+    proxy.request();
+
+    return 0;
 }
 
-public class ProxyLazy {
-    public static void main(String[] args) {
-        Proxy proxy = new Proxy();
-        proxy.request();
-    }
-}
+/*
+Concrete Subject Request Method
+*/

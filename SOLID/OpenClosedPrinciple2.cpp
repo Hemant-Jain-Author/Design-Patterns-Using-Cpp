@@ -1,0 +1,45 @@
+#include <iostream>
+#include <string>
+
+class Animal {
+protected:
+    std::string name;
+public:
+    Animal(const std::string& name) : name(name) {}
+};
+
+class Bird : public Animal {
+public:
+    Bird(const std::string& name) : Animal(name) {}
+
+    void fly() {
+        if (name == "Dodo") {
+            std::cout << "The dodo is extinct and cannot fly." << std::endl;
+        } else if (name == "Penguin") {
+            std::cout << "The penguin cannot fly." << std::endl;
+        } else if (name == "Eagle") {
+            std::cout << "The eagle is soaring through the sky!" << std::endl;
+        } else if (name == "Sparrow") {
+            std::cout << "The sparrow is fluttering its wings!" << std::endl;
+        }
+    }
+};
+
+// Client code
+int main() {
+    Bird* bird1 = new Bird("Eagle");
+    bird1->fly();
+
+    Bird* bird2 = new Bird("Dodo");
+    bird2->fly();
+
+    delete bird1;
+    delete bird2;
+
+    return 0;
+}
+
+/*
+The eagle is soaring through the sky!
+The dodo is extinct and cannot fly.
+*/

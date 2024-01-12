@@ -1,90 +1,81 @@
-// Coffee (Component)
-interface Coffee {
-    int getCost();
-    String getIngredients();
-}
+#include <iostream>
 
-// SimpleCoffee (ConcreteComponent)
-class SimpleCoffee implements Coffee {
-    @Override
-    public int getCost() {
-        return 10;
+// Component
+class Component {
+public:
+    virtual void operation() = 0;
+    virtual ~Component() = default;
+};
+
+// ConcreteComponent
+class ConcreteComponent : public Component {
+public:
+    void operation() override {
+        std::cout << "ConcreteComponent operation." << std::endl;
+    }
+};
+
+// Decorator
+class Decorator : public Component {
+private:
+    Component* component;
+
+public:
+    Decorator(Component* component) : component(component) {}
+
+    void operation() override {
+        if (component) {
+            component->operation();
+        }
     }
 
-    @Override
-    public String getIngredients() {
-        return "Coffee";
+    virtual ~Decorator() {
+        delete component;
     }
-}
+};
 
-// CoffeeDecorator (Decorator)
-abstract class CoffeeDecorator implements Coffee {
-    protected Coffee component;
+// ConcreteDecorator1
+class ConcreteDecorator1 : public Decorator {
+public:
+    ConcreteDecorator1(Component* component) : Decorator(component) {}
 
-    public CoffeeDecorator(Coffee component) {
-        this.component = component;
+    void operation() override {
+        std::cout << "ConcreteDecorator1 operation start." << std::endl;
+        Decorator::operation();
+        std::cout << "ConcreteDecorator1 operation end." << std::endl;
     }
+};
 
-    @Override
-    public abstract int getCost();
+// ConcreteDecorator2
+class ConcreteDecorator2 : public Decorator {
+public:
+    ConcreteDecorator2(Component* component) : Decorator(component) {}
 
-    @Override
-    public abstract String getIngredients();
-}
-
-// MilkDecorator (ConcreteDecorator)
-class MilkDecorator extends CoffeeDecorator {
-    public MilkDecorator(Coffee component) {
-        super(component);
+    void operation() override {
+        std::cout << "ConcreteDecorator2 operation start." << std::endl;
+        Decorator::operation();
+        std::cout << "ConcreteDecorator2 operation end." << std::endl;
     }
-
-    @Override
-    public int getCost() {
-        return component.getCost() + 4;
-    }
-
-    @Override
-    public String getIngredients() {
-        return component.getIngredients() + ", Milk";
-    }
-}
-
-// EspressoDecorator (ConcreteDecorator)
-class EspressoDecorator extends CoffeeDecorator {
-    public EspressoDecorator(Coffee component) {
-        super(component);
-    }
-
-    @Override
-    public int getCost() {
-        return component.getCost() + 5;
-    }
-
-    @Override
-    public String getIngredients() {
-        return component.getIngredients() + ", Espresso";
-    }
-}
+};
 
 // Client code
-public class DecoratorPatternCoffee {
-    public static void main(String[] args) {
-        Coffee component = new SimpleCoffee();
-        Coffee decorator1 = new MilkDecorator(component);
-        Coffee decorator2 = new EspressoDecorator(decorator1);
+int main() {
+    Component* component = new ConcreteComponent();
+    Decorator* decorator1 = new ConcreteDecorator1(component);
+    Decorator* decorator2 = new ConcreteDecorator2(decorator1);
 
-        System.out.println("Coffee cost is :: " + decorator2.getCost());
-        System.out.println("Coffee ingredients are :: " + decorator2.getIngredients());
+    decorator2->operation();
 
-        Coffee latte = new MilkDecorator(new MilkDecorator(new SimpleCoffee()));
-        System.out.println("Coffee cost is :: " + latte.getCost());
-        System.out.println("Coffee ingredients are :: " + latte.getIngredients());
-    }
+    // Clean up dynamically allocated memory
+    delete decorator2;
+
+    return 0;
 }
 
 /*
-Coffee cost is :: 19
-Coffee ingredients are :: Coffee, Milk, Espresso
-Coffee cost is :: 18
-Coffee ingredients are :: Coffee, Milk, Milk
+ConcreteDecorator2 operation start.
+ConcreteDecorator1 operation start.
+ConcreteComponent operation.
+ConcreteDecorator1 operation end.
+ConcreteDecorator2 operation end.
 */

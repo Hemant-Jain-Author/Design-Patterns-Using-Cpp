@@ -1,71 +1,79 @@
-import java.util.HashMap;
-import java.util.Map;
+#include <iostream>
+#include <unordered_map>
 
-interface Mediator {
-    void addColleague(Colleague colleague);
-    void sendMessage(String message, String colleagueId);
-}
+class Mediator;
 
-class ConcreteMediator implements Mediator {
-    private Map<String, Colleague> colleagues = new HashMap<>();
+class Colleague {
+protected:
+    std::string id;
+    Mediator* mediator;
 
-    @Override
-    public void addColleague(Colleague colleague) {
-        colleagues.put(colleague.getId(), colleague);
-    }
+public:
+    Colleague(const std::string& id, Mediator* mediator) : id(id), mediator(mediator) {}
 
-    @Override
-    public void sendMessage(String message, String colleagueId) {
-        System.out.println("Mediator pass Message : " + message);
-        colleagues.get(colleagueId).receive(message);
-    }
-}
+    virtual void send(const std::string& message, const std::string& to) = 0;
+    virtual void receive(const std::string& message) = 0;
 
-abstract class Colleague {
-    protected String id;
-    protected Mediator mediator;
-
-    public Colleague(String id, Mediator mediator) {
-        this.id = id;
-        this.mediator = mediator;
-    }
-
-    abstract void send(String message, String to);
-
-    abstract void receive(String message);
-
-    public String getId() {
+    const std::string& getId() const {
         return id;
     }
+};
+
+class Mediator {
+public:
+    virtual void addColleague(Colleague* colleague) = 0;
+    virtual void sendMessage(const std::string& message, const std::string& colleagueId) = 0;
+    virtual ~Mediator() = default;
+};
+
+class ConcreteMediator : public Mediator {
+private:
+    std::unordered_map<std::string, Colleague*> colleagues;
+
+public:
+    void addColleague(Colleague* colleague) override {
+        colleagues[colleague->getId()] = colleague;
+    }
+
+    void sendMessage(const std::string& message, const std::string& colleagueId) override {
+        std::cout << "Mediator pass Message : " << message << std::endl;
+        colleagues[colleagueId]->receive(message);
+    }
+};
+
+class ConcreteColleague : public Colleague {
+public:
+    ConcreteColleague(const std::string& id, Mediator* mediator) : Colleague(id, mediator) {}
+
+    void send(const std::string& message, const std::string& to) override {
+        std::cout << id << " Sent Message : " << message << std::endl;
+        mediator->sendMessage(message, to);
+    }
+
+    void receive(const std::string& message) override {
+        std::cout << id << " Received Message " << message << std::endl;
+    }
+};
+
+int main() {
+    ConcreteMediator mediator;
+    ConcreteColleague first("First", &mediator);
+    mediator.addColleague(&first);
+
+    ConcreteColleague second("Second", &mediator);
+    mediator.addColleague(&second);
+
+    first.send("Hello, World!", "Second");
+    second.send("Hi, World!", "First");
+
+    return 0;
 }
 
-class ConcreteColleague extends Colleague {
-    public ConcreteColleague(String id, Mediator mediator) {
-        super(id, mediator);
-    }
-
-    @Override
-    void send(String message, String to) {
-        System.out.println(id + " Sent Message : " + message);
-        mediator.sendMessage(message, to);
-    }
-
-    @Override
-    void receive(String message) {
-        System.out.println(id + " Received Message " + message);
-    }
-}
-
-public class MediatorPattern2 {
-    public static void main(String[] args) {
-        ConcreteMediator mediator = new ConcreteMediator();
-        ConcreteColleague first = new ConcreteColleague("First", mediator);
-        mediator.addColleague(first);
-
-        ConcreteColleague second = new ConcreteColleague("Second", mediator);
-        mediator.addColleague(second);
-
-        first.send("Hello, World!", "Second");
-        second.send("Hi, World!", "First");
-    }
-}
+/*
+First Sent Message : Hello, World!
+Mediator pass Message : Hello, World!
+Second Received Message Hello, World!
+Second Sent Message : Hi, World!
+Mediator pass Message : Hi, World!
+First Received Message Hi, World!
+*/

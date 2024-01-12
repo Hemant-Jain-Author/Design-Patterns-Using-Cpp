@@ -1,82 +1,104 @@
-import java.util.HashMap;
-import java.util.Map;
+#include <iostream>
+#include <unordered_map>
 
-interface IChatRoom {
-    void addParticipant(IParticipant participant);
-    void broadcast(String message, String origin);
-    void sendMessage(String message, String to);
-}
+// Forward declarations
+class IChatRoom;
+class IParticipant;
 
-class ChatRoom implements IChatRoom {
-    private Map<String, IParticipant> participants = new HashMap<>();
+// ChatRoom interface
+class IChatRoom {
+public:
+    virtual void addParticipant(IParticipant* participant) = 0;
+    virtual void broadcast(const std::string& message, const std::string& origin) = 0;
+    virtual void sendMessage(const std::string& message, const std::string& to) = 0;
+    virtual ~IChatRoom() = default;
+};
 
-    @Override
-    public void addParticipant(IParticipant participant) {
-        participants.put(participant.getName(), participant);
+// Participant interface
+class IParticipant {
+public:
+    virtual std::string getName() const = 0;
+    virtual void broadcast(const std::string& message) const = 0;
+    virtual void send(const std::string& message, const std::string& to) const = 0;
+    virtual void receive(const std::string& message) const = 0;
+    virtual ~IParticipant() = default;
+};
+
+
+// ChatRoom implementation
+class ChatRoom : public IChatRoom {
+private:
+    std::unordered_map<std::string, IParticipant*> participants;
+
+public:
+    void addParticipant(IParticipant* participant) override {
+        participants[participant->getName()] = participant;
     }
 
-    @Override
-    public void broadcast(String message, String origin) {
-        System.out.println("ChatRoom broadcast Message : " + message);
-        participants.values().stream()
-                .filter(p -> !p.getName().equals(origin))
-                .forEach(p -> p.receive(message));
+    void broadcast(const std::string& message, const std::string& origin) override {
+        std::cout << "ChatRoom broadcast Message: " << message << std::endl;
+        for (const auto& entry : participants) {
+            if (entry.first != origin) {
+                entry.second->receive(message);
+            }
+        }
     }
 
-    @Override
-    public void sendMessage(String message, String to) {
-        participants.get(to).receive(message);
+    void sendMessage(const std::string& message, const std::string& to) override {
+        participants[to]->receive(message);
     }
-}
+};
 
-interface IParticipant {
-    String getName();
-    void broadcast(String message);
-    void send(String message, String to);
-    void receive(String message);
-}
 
-class Participant implements IParticipant {
-    private String name;
-    private IChatRoom chatRoom;
 
-    public Participant(String name, IChatRoom chatRoom) {
-        this.name = name;
-        this.chatRoom = chatRoom;
-        chatRoom.addParticipant(this);
+// Participant implementation
+class Participant : public IParticipant {
+private:
+    std::string name;
+    IChatRoom* chatRoom;
+
+public:
+    Participant(const std::string& name, IChatRoom* chatRoom)
+        : name(name), chatRoom(chatRoom) {
+        chatRoom->addParticipant(this);
     }
 
-    @Override
-    public String getName() {
+    std::string getName() const override {
         return name;
     }
 
-    @Override
-    public void broadcast(String message) {
-        System.out.println(name + " broadcast Message : " + message);
-        chatRoom.broadcast(message, name);
+    void broadcast(const std::string& message) const override {
+        std::cout << name << " broadcast Message: " << message << std::endl;
+        chatRoom->broadcast(message, name);
     }
 
-    @Override
-    public void send(String message, String to) {
-        System.out.println(name + " sent Message : " + message);
-        chatRoom.sendMessage(message, to);
+    void send(const std::string& message, const std::string& to) const override {
+        std::cout << name << " sent Message: " << message << std::endl;
+        chatRoom->sendMessage(message, to);
     }
 
-    @Override
-    public void receive(String message) {
-        System.out.println(name + " received Message : " + message);
+    void receive(const std::string& message) const override {
+        std::cout << name << " received Message: " << message << std::endl;
     }
+};
+
+int main() {
+    ChatRoom chatRoom;
+    Participant james("James", &chatRoom);
+    Participant michael("Michael", &chatRoom);
+    Participant robert("Robert", &chatRoom);
+
+    michael.send("Good Morning.", "James");
+    james.broadcast("Hello, World!");
+
+    return 0;
 }
 
-public class MediatorPattern {
-    public static void main(String[] args) {
-        ChatRoom chatRoom = new ChatRoom();
-        Participant james = new Participant("James", chatRoom);
-        Participant michael = new Participant("Michael", chatRoom);
-        Participant robert = new Participant("Robert", chatRoom);
-
-        michael.send("Good Morning.", "James");
-        james.broadcast("Hello, World!");
-    }
-}
+/*
+Michael sent Message: Good Morning.
+James received Message: Good Morning.
+James broadcast Message: Hello, World!
+ChatRoom broadcast Message: Hello, World!
+Robert received Message: Hello, World!
+Michael received Message: Hello, World!
+*/

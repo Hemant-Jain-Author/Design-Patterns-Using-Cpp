@@ -1,28 +1,40 @@
+#include <iostream>
+
 class A {
-    public A() {
-        System.out.println("A created");
+public:
+    A() {
+        std::cout << "A created" << std::endl;
     }
 
-    public void fun1() {
-        System.out.println("fun1");
+    void fun1() {
+        std::cout << "fun1" << std::endl;
     }
-}
+};
 
 class B {
-    public B() {
-        System.out.println("B created");
+public:
+    B() {
+        std::cout << "B created" << std::endl;
     }
 
-    public void fun2() {
-        System.out.println("fun2 start");
-        new A().fun1();
-        System.out.println("fun2 end");
+    void fun2() {
+        std::cout << "fun2 start" << std::endl;
+        A().fun1();
+        std::cout << "fun2 end" << std::endl;
     }
+};
+
+int main() {
+    B b;
+    b.fun2();
+
+    return 0;
 }
 
-public class UsingRelationship {
-    public static void main(String[] args) {
-        B b = new B();
-        b.fun2();
-    }
-}
+/*
+B created
+fun2 start
+A created
+fun1
+fun2 end
+*/

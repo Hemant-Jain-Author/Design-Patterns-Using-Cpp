@@ -1,46 +1,62 @@
-import java.io.*;
+#include <iostream>
 
-abstract class OrderPackingTemplate {
-    
-    final void packProduct() {
+// OrderPackingTemplate class
+class OrderPackingTemplate {
+public:
+    void packProduct() {
         getProduct();
         addProductToBox();
         delivery();
     }
 
+    virtual ~OrderPackingTemplate() {}
+
+private:
     void getProduct() {
-        System.out.println("Get the product from the shelf.");
+        std::cout << "Get the product from the shelf." << std::endl;
     }
 
     void addProductToBox() {
-        System.out.println("Put the product inside the box.");
+        std::cout << "Put the product inside the box." << std::endl;
     }
 
-    abstract void delivery();
-}
+    virtual void delivery() = 0;
+};
 
-class OnlineOrderPacking extends OrderPackingTemplate {
-    @Override
-    void delivery() {
-        System.out.println("Add delivery address slip and ship.");
+// OnlineOrderPacking class
+class OnlineOrderPacking : public OrderPackingTemplate {
+private:
+    void delivery() override {
+        std::cout << "Add delivery address slip and ship." << std::endl;
     }
-}
+};
 
-class StoreOrderPacking extends OrderPackingTemplate {
-    @Override
-    void delivery() {
-        System.out.println("Add thanks message to the box and deliver to the customer.");
+// StoreOrderPacking class
+class StoreOrderPacking : public OrderPackingTemplate {
+private:
+    void delivery() override {
+        std::cout << "Add thanks message to the box and deliver to the customer." << std::endl;
     }
+};
+
+int main() {
+    // Example usage
+    OrderPackingTemplate* onlineOrder = new OnlineOrderPacking();
+    onlineOrder->packProduct();
+    std::cout << std::endl;
+    OrderPackingTemplate* storeOrder = new StoreOrderPacking();
+    storeOrder->packProduct();
+    delete onlineOrder; // Freeing allocated memory
+    delete storeOrder;  // Freeing allocated memory
+    return 0;
 }
 
-public class TemplatePatternOrder {
-    public static void main(String[] args) {
-        OnlineOrderPacking onlineOrder = new OnlineOrderPacking();
-        onlineOrder.packProduct();
+/*
+Get the product from the shelf.
+Put the product inside the box.
+Add delivery address slip and ship.
 
-        System.out.println();
-
-        StoreOrderPacking storeOrder = new StoreOrderPacking();
-        storeOrder.packProduct();
-    }
-}
+Get the product from the shelf.
+Put the product inside the box.
+Add thanks message to the box and deliver to the customer.
+*/

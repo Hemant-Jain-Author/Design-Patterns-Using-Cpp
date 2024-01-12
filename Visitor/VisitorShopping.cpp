@@ -1,113 +1,131 @@
-import java.util.ArrayList;
-import java.util.List;
+#include <iostream>
+#include <vector>
 
-abstract class Element {
-    abstract double accept(Visitor visitor);
-    abstract double price();
-}
+class Visitor; // Forward declaration
 
-class Book extends Element {
-    private double price;
-    private int isbn;
+// Abstract base class for elements
+class Element {
+public:
+    virtual double accept(Visitor& visitor) = 0;
+    virtual double price() = 0;
+    virtual ~Element() {}
+};
 
-    public Book(double price, int isbn) {
-        this.price = price;
-        this.isbn = isbn;
+// Concrete Book class
+class Book : public Element {
+private:
+    double priceVar;
+    int isbn;
+
+public:
+    Book(double price, int isbn) : priceVar(price), isbn(isbn) {}
+
+    double price() override {
+        return priceVar;
     }
 
-    @Override
-    double price(){
-        return price;
+    double accept(Visitor& visitor) override;
+};
+
+// Concrete Fruit class
+class Fruit : public Element {
+private:
+    double priceVar;
+    int quantity;
+    std::string type;
+
+public:
+    Fruit(double price, int quantity, const std::string& type) : priceVar(price), quantity(quantity), type(type) {}
+
+    double price() override {
+        return priceVar;
     }
 
-    @Override
-    double accept(Visitor visitor) {
-        return visitor.visitBook(this);
-    }
-}
+    double accept(Visitor& visitor) override;
+};
 
-class Fruit extends Element {
-    private double price;
-    private int quantity;
-    private String type;
+// Abstract Visitor class
+class Visitor {
+public:
+    virtual double visitBook(Book& book) = 0;
+    virtual double visitFruit(Fruit& fruit) = 0;
+    virtual ~Visitor() {}
+};
 
-    public Fruit(double price, int quantity, String type) {
-        this.price = price;
-        this.quantity = quantity;
-        this.type = type;
-    }
-
-    @Override
-    double price(){
-        return price;
-    }
-
-    @Override
-    double accept(Visitor visitor) {
-        return visitor.visitFruit(this) * quantity;
-    }
-}
-
-abstract class Visitor {
-    abstract double visitBook(Book book);
-    abstract double visitFruit(Fruit fruit);
-}
-
-class SundayDiscount extends Visitor {
-    @Override
-    double visitBook(Book book) {
+// Concrete SundayDiscount class
+class SundayDiscount : public Visitor {
+public:
+    double visitBook(Book& book) override {
         return book.price() - 50;
     }
 
-    @Override
-    double visitFruit(Fruit fruit) {
+    double visitFruit(Fruit& fruit) override {
         return fruit.price() - 5;
     }
-}
+};
 
-class SaleDiscount extends Visitor {
-    @Override
-    double visitBook(Book book) {
+// Concrete SaleDiscount class
+class SaleDiscount : public Visitor {
+public:
+    double visitBook(Book& book) override {
         return book.price() / 2;
     }
 
-    @Override
-    double visitFruit(Fruit fruit) {
+    double visitFruit(Fruit& fruit) override {
         return fruit.price() / 2;
     }
+};
+
+// Implementation of accept for Book
+double Book::accept(Visitor& visitor) {
+    return visitor.visitBook(*this);
 }
 
+// Implementation of accept for Fruit
+double Fruit::accept(Visitor& visitor) {
+    return visitor.visitFruit(*this) * quantity;
+}
+
+// ShoppingCart class
 class ShoppingCart {
-    private List<Element> list = new ArrayList<>();
-    private Visitor visitor;
+private:
+    std::vector<Element*> list;
+    Visitor* visitor;
 
-    public void add(Element element) {
-        list.add(element);
+public:
+    void add(Element* element) {
+        list.push_back(element);
     }
 
-    public void setDiscountVisitor(Visitor discount) {
-        this.visitor = discount;
+    void setDiscountVisitor(Visitor* discount) {
+        this->visitor = discount;
     }
 
-    public void accept() {
+    void accept() {
         double cost = 0;
-        for (Element element : list) {
-            cost += element.accept(visitor);
+        for (Element* element : list) {
+            cost += element->accept(*visitor);
         }
-        System.out.println("Total cost: " + cost);
+        std::cout << "Total cost: " << cost << std::endl;
     }
+};
+
+int main() {
+    // Example usage
+    ShoppingCart cart;
+    cart.add(new Fruit(100, 10, "Apple"));
+    cart.add(new Book(100, 12345));
+
+    cart.setDiscountVisitor(new SundayDiscount());
+    cart.accept();
+
+    cart.setDiscountVisitor(new SaleDiscount());
+    cart.accept();
+
+    return 0;
 }
 
-public class VisitorShopping {
-    public static void main(String[] args) {
-        ShoppingCart cart = new ShoppingCart();
-        cart.add(new Fruit(100, 10, "Apple"));
-        cart.add(new Book(100, 12345));
-
-        cart.setDiscountVisitor(new SundayDiscount());
-        cart.accept();
-
-        cart.setDiscountVisitor(new SaleDiscount());
-        cart.accept();
-    }
-}
+/*
+Total cost: 1000
+Total cost: 550
+*/

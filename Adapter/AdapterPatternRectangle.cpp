@@ -1,58 +1,61 @@
+#include <iostream>
+
 // Desired Interface
-interface Shape {
-    void draw();
-}
+class Shape {
+public:
+    virtual void draw() = 0;
+    virtual ~Shape() {} // Virtual destructor for proper cleanup
+};
 
 // Circle class
-class Circle implements Shape {
-    private int x, y, radius;
+class Circle : public Shape {
+private:
+    int x, y, radius;
 
-    public Circle(int x, int y, int r) {
-        this.x = x;
-        this.y = y;
-        this.radius = r;
-    }
+public:
+    Circle(int x, int y, int r) : x(x), y(y), radius(r) {}
 
-    @Override
-    public void draw() {
-        System.out.println("Draw the Circle.");
+    void draw() override {
+        std::cout << "Draw the Circle." << std::endl;
     }
-}
+};
 
 // Rectangle class (Adaptee)
 class Rectangle {
-    private int x, y, length, width;
+private:
+    int x, y, length, width;
 
-    public Rectangle(int x, int y, int l, int w) {
-        this.x = x;
-        this.y = y;
-        this.length = l;
-        this.width = w;
-    }
+public:
+    Rectangle(int x, int y, int l, int w) : x(x), y(y), length(l), width(w) {}
 
-    public void oldDraw() {
-        System.out.println("Drawing Rectangle.");
+    void oldDraw() {
+        std::cout << "Drawing Rectangle." << std::endl;
     }
-}
+};
 
 // RectangleAdapter class
-class RectangleAdapter implements Shape {
-    private Rectangle adaptee;
+class RectangleAdapter : public Shape {
+private:
+    Rectangle adaptee;
 
-    public RectangleAdapter(int x, int y, int l, int w) {
-        this.adaptee = new Rectangle(x, y, l, w);
-    }
+public:
+    RectangleAdapter(int x, int y, int l, int w) : adaptee(x, y, l, w) {}
 
-    @Override
-    public void draw() {
+    void draw() override {
         adaptee.oldDraw();
     }
-}
+};
 
 // Client Code
-public class AdapterPatternRectangle {
-    public static void main(String[] args) {
-        Shape adapter = new RectangleAdapter(1, 2, 3, 4);
-        adapter.draw();
-    }
+int main() {
+    Shape* adapter = new RectangleAdapter(1, 2, 3, 4);
+    adapter->draw();
+
+    // Clean up memory
+    delete adapter;
+
+    return 0;
 }
+/*
+Drawing Rectangle.
+*/

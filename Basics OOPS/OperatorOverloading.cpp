@@ -1,55 +1,65 @@
+#include <iostream>
+#include <cmath>
+
 class Rectangle {
-    private double length;
-    private double breadth;
+private:
+    double length;
+    double breadth;
 
-    public Rectangle(double length, double breadth) {
-        this.length = length;
-        this.breadth = breadth;
-    }
+public:
+    Rectangle(double length, double breadth) : length(length), breadth(breadth) {}
 
-    public double area() {
+    double area() const {
         return length * breadth;
     }
 
-    public double perimeter() {
+    double perimeter() const {
         return 2 * (length + breadth);
     }
 
     // Overloading + operator
-    public Rectangle add(Rectangle rec) {
-        return new Rectangle(this.length + rec.length, this.breadth + rec.breadth);
+    Rectangle add(const Rectangle& rec) const {
+        return Rectangle(this->length + rec.length, this->breadth + rec.breadth);
     }
 
     // Overloading - operator
-    public Rectangle subtract(Rectangle rec) {
-        return new Rectangle(Math.abs(this.length - rec.length), Math.abs(this.breadth - rec.breadth));
+    Rectangle subtract(const Rectangle& rec) const {
+        return Rectangle(std::abs(this->length - rec.length), std::abs(this->breadth - rec.breadth));
     }
 
     // Overloading == operator
-    public boolean equals(Rectangle rec) {
-        return this.length == rec.length && this.breadth == rec.breadth;
+    bool equals(const Rectangle& rec) const {
+        return this->length == rec.length && this->breadth == rec.breadth;
     }
 
     // Overriding toString method
-    @Override
-    public String toString() {
-        return "Rectangle length and width: " + length + " " + breadth;
+    friend std::ostream& operator<<(std::ostream& os, const Rectangle& rec) {
+        os << "Rectangle length and width: " << rec.length << " " << rec.breadth;
+        return os;
     }
+};
+
+int main() {
+    Rectangle r1(4, 6);
+    Rectangle r2(10, 6);
+
+    std::cout << "Is r1 == r2 ? " << (r1.equals(r2) ? "true" : "false") << std::endl;
+
+    Rectangle r3 = r1.add(r2);
+    Rectangle r4 = r1.subtract(r2);
+
+    std::cout << r1 << std::endl;
+    std::cout << r2 << std::endl;
+    std::cout << r3 << std::endl;
+    std::cout << r4 << std::endl;
+
+    return 0;
 }
 
-public class OperatorOverloading {
-    public static void main(String[] args) {
-        Rectangle r1 = new Rectangle(4, 6);
-        Rectangle r2 = new Rectangle(10, 6);
-
-        System.out.println("Is r1 == r2 ? " + r1.equals(r2));
-
-        Rectangle r3 = r1.add(r2);
-        Rectangle r4 = r1.subtract(r2);
-
-        System.out.println(r1);
-        System.out.println(r2);
-        System.out.println(r3);
-        System.out.println(r4);
-    }
-}
+/*
+Is r1 == r2 ? false
+Rectangle length and width: 4 6
+Rectangle length and width: 10 6
+Rectangle length and width: 14 12
+Rectangle length and width: 6 0
+*/

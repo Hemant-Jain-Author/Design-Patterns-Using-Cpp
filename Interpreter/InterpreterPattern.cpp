@@ -1,35 +1,49 @@
+#include <iostream>
+
 // Abstract Expression
-interface AbstractExpression {
-    void interpret();
-}
+class AbstractExpression {
+public:
+    virtual void interpret() = 0;
+    virtual ~AbstractExpression() = default;
+};
 
 // Nonterminal Expression
-class NonterminalExpression implements AbstractExpression {
-    private AbstractExpression expression;
+class NonterminalExpression : public AbstractExpression {
+private:
+    AbstractExpression* expression;
 
-    public NonterminalExpression(AbstractExpression expression) {
-        this.expression = expression;
+public:
+    NonterminalExpression(AbstractExpression* expr) : expression(expr) {}
+
+    void interpret() override {
+        std::cout << "NonTerminalExpression:interpret" << std::endl;
+        expression->interpret();
     }
 
-    @Override
-    public void interpret() {
-        System.out.println("NonTerminalExpression:interpret");
-        expression.interpret();
+    ~NonterminalExpression() {
+        delete expression;
     }
-}
+};
 
 // Terminal Expression
-class TerminalExpression implements AbstractExpression {
-    @Override
-    public void interpret() {
-        System.out.println("TerminalExpression:interpret");
+class TerminalExpression : public AbstractExpression {
+public:
+    void interpret() override {
+        std::cout << "TerminalExpression:interpret" << std::endl;
     }
-}
+};
 
 // Client Code
-public class InterpreterPattern {
-    public static void main(String[] args) {
-        AbstractExpression tree = new NonterminalExpression(new TerminalExpression());
-        tree.interpret();
-    }
+int main() {
+    AbstractExpression* tree = new NonterminalExpression(new TerminalExpression());
+    tree->interpret();
+
+    delete tree;
+
+    return 0;
 }
+
+/*
+NonTerminalExpression:interpret
+TerminalExpression:interpret
+*/

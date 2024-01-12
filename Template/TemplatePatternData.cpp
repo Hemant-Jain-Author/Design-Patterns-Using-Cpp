@@ -1,52 +1,66 @@
-abstract class AddDataTemplate {
-    final void addData() {
+#include <iostream>
+
+// AddDataTemplate class
+class AddDataTemplate {
+public:
+    void addData() {
         open();
         add();
         close();
     }
 
-    abstract void open();
-    abstract void add();
-    abstract void close();
+    virtual ~AddDataTemplate() {}
+
+private:
+    virtual void open() = 0;
+    virtual void add() = 0;
+    virtual void close() = 0;
+};
+
+// AddDataToFile class
+class AddDataToFile : public AddDataTemplate {
+private:
+    void open() override {
+        std::cout << "Open file." << std::endl;
+    }
+
+    void add() override {
+        std::cout << "Add data to file." << std::endl;
+    }
+
+    void close() override {
+        std::cout << "Close file." << std::endl;
+    }
+};
+
+// AddDataToDB class
+class AddDataToDB : public AddDataTemplate {
+private:
+    void open() override {
+        std::cout << "Open Database." << std::endl;
+    }
+
+    void add() override {
+        std::cout << "Add data to Database." << std::endl;
+    }
+
+    void close() override {
+        std::cout << "Close Database." << std::endl;
+    }
+};
+
+int main() {
+    // Example usage
+    AddDataTemplate* addDataToDB = new AddDataToDB();
+    addDataToDB->addData();
+
+    delete addDataToDB; // Freeing allocated memory
+
+    return 0;
 }
 
-class AddDataToFile extends AddDataTemplate {
-    @Override
-    void open() {
-        System.out.println("Open file.");
-    }
-
-    @Override
-    void add() {
-        System.out.println("Add data to file.");
-    }
-
-    @Override
-    void close() {
-        System.out.println("Close file");
-    }
-}
-
-class AddDataToDB extends AddDataTemplate {
-    @Override
-    void open() {
-        System.out.println("Open Database.");
-    }
-
-    @Override
-    void add() {
-        System.out.println("Add data to Database.");
-    }
-
-    @Override
-    void close() {
-        System.out.println("Close Database.");
-    }
-}
-
-public class TemplatePatternData {
-    public static void main(String[] args) {
-        AddDataTemplate addDataToDB = new AddDataToDB();
-        addDataToDB.addData();
-    }
-}
+/*
+Open Database.
+Add data to Database.
+Close Database.
+*/

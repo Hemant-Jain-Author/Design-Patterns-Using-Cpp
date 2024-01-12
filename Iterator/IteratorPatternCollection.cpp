@@ -1,62 +1,89 @@
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+#include <iostream>
+#include <vector>
 
-class ConcreteAggregate implements Iterable<Integer> {
-    private List<Integer> data;
+// Forward declarations
+class ConcreteAggregate;
 
-    public ConcreteAggregate() {
-        this.data = new ArrayList<>();
+// Iterator interface
+class Iterator {
+public:
+    virtual bool hasNext() = 0;
+    virtual int next() = 0;
+    virtual ~Iterator() = default;
+};
+
+// Concrete Iterator
+class ConcreteIterator;
+
+// Aggregate interface
+class Aggregate {
+public:
+    virtual Iterator* createIterator() = 0;
+    virtual ~Aggregate() = default;
+};
+
+class ConcreteIterator;
+
+// Concrete Aggregate
+class ConcreteAggregate : public Aggregate {
+private:
+    std::vector<int> data;
+
+public:
+    void addData(int val) {
+        data.push_back(val);
     }
 
-    public void addData(int val) {
-        data.add(val);
-    }
+    Iterator* createIterator() override ;
 
-    @Override
-    public Iterator<Integer> iterator() {
-        return new ConcreteIterator(this);
-    }
-
-    public List<Integer> getData() {
+    const std::vector<int>& getData() const {
         return data;
     }
-}
+};
 
-class ConcreteIterator implements Iterator<Integer> {
-    private ConcreteAggregate aggregate;
-    private int index;
+// Concrete Iterator
+class ConcreteIterator : public Iterator {
+private:
+    ConcreteAggregate* aggregate;
+    int index;
 
-    public ConcreteIterator(ConcreteAggregate aggregate) {
-        this.aggregate = aggregate;
-        this.index = 0;
+public:
+    ConcreteIterator(ConcreteAggregate* aggregate) : aggregate(aggregate), index(0) {}
+
+    bool hasNext() override {
+        return index < aggregate->getData().size();
     }
 
-    @Override
-    public boolean hasNext() {
-        return index < aggregate.getData().size();
-    }
-
-    @Override
-    public Integer next() {
+    int next() override {
         if (!hasNext()) {
-            throw new IndexOutOfBoundsException();
+            throw std::out_of_range("Index out of bounds");
         }
-        int value = aggregate.getData().get(index);
+        int value = aggregate->getData()[index];
         index++;
         return value;
     }
+};
+
+Iterator* ConcreteAggregate::createIterator() {
+    return new ConcreteIterator(this);
 }
 
-public class IteratorPatternCollection {
-    public static void main(String[] args) {
-        ConcreteAggregate aggregate = new ConcreteAggregate();
-        for (int i = 0; i < 10; i++) {
-            aggregate.addData(i);
-        }
-
-        for (int val : aggregate) {
-            System.out.print(val + " ");
-        }
+int main() {
+    ConcreteAggregate aggregate;
+    for (int i = 0; i < 10; i++) {
+        aggregate.addData(i);
     }
+
+    Iterator* iterator = aggregate.createIterator();
+    while (iterator->hasNext()) {
+        std::cout << iterator->next() << " ";
+    }
+
+    delete iterator;
+
+    return 0;
 }
+
+/*
+0 1 2 3 4 5 6 7 8 9 
+*/

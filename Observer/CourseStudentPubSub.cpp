@@ -1,68 +1,73 @@
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+#include <iostream>
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
 
-interface Observer {
-    void notify(String subject, String message);
-}
+class Observer {
+public:
+    virtual void notify(const std::string& subject, const std::string& message) = 0;
+};
 
 class Courses {
-    private Map<String, Set<Observer>> courseStudents = new HashMap<>();
+private:
+    std::unordered_map<std::string, std::unordered_set<Observer*>> courseStudents;
 
-    public void subscribe(String subject, Observer student) {
-        courseStudents.computeIfAbsent(subject, k -> new HashSet<>()).add(student);
+public:
+    void subscribe(const std::string& subject, Observer* student) {
+        courseStudents[subject].insert(student);
     }
 
-    public void unsubscribe(String subject, Observer student) {
-        courseStudents.getOrDefault(subject, new HashSet<>()).remove(student);
-    }
-
-    public void publish(String subject, String message) {
-        if (!courseStudents.containsKey(subject)) {
-            System.out.println("No subscribers for subject '" + subject + "'.");
-            return;
-        }
-
-        for (Observer student : courseStudents.get(subject)) {
-            student.notify(subject, message);
+    void unsubscribe(const std::string& subject, Observer* student) {
+        auto it = courseStudents.find(subject);
+        if (it != courseStudents.end()) {
+            it->second.erase(student);
         }
     }
-}
 
-class Student implements Observer {
-    private String name;
-
-    public Student(String name) {
-        this.name = name;
+    void publish(const std::string& subject, const std::string& message) {
+        auto it = courseStudents.find(subject);
+        if (it != courseStudents.end()) {
+            for (Observer* student : it->second) {
+                student->notify(subject, message);
+            }
+        } else {
+            std::cout << "No subscribers for subject '" << subject << "'." << std::endl;
+        }
     }
+};
 
-    @Override
-    public void notify(String subject, String message) {
-        System.out.println(name + " received message on subject '" + subject + "': " + message);
+class Student : public Observer {
+private:
+    std::string name;
+
+public:
+    Student(const std::string& name) : name(name) {}
+
+    void notify(const std::string& subject, const std::string& message) override {
+        std::cout << name << " received message on subject '" << subject << "': " << message << std::endl;
     }
-}
+};
 
-public class CourseStudentPubSub {
-    public static void main(String[] args) {
-        Courses courses = new Courses();
-        Student john = new Student("John");
-        Student eric = new Student("Eric");
-        Student jack = new Student("Jack");
+int main() {
+    Courses courses;
+    Student john("John");
+    Student eric("Eric");
+    Student jack("Jack");
 
-        courses.subscribe("English", john);
-        courses.subscribe("English", eric);
-        courses.subscribe("Maths", eric);
-        courses.subscribe("Science", jack);
+    courses.subscribe("English", &john);
+    courses.subscribe("English", &eric);
+    courses.subscribe("Maths", &eric);
+    courses.subscribe("Science", &jack);
 
-        courses.publish("English", "Tomorrow class at 11");
-        courses.publish("Maths", "Tomorrow class at 1");
+    courses.publish("English", "Tomorrow class at 11");
+    courses.publish("Maths", "Tomorrow class at 1");
 
-        // Unsubscribe Eric from English
-        courses.unsubscribe("English", eric);
+    // Unsubscribe Eric from English
+    courses.unsubscribe("English", &eric);
 
-        courses.publish("English", "Updated schedule for English");
-    }
+    courses.publish("English", "Updated schedule for English");
+
+    return 0;
 }
 
 /*

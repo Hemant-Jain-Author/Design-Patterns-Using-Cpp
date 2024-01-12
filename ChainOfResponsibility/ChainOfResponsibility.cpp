@@ -1,49 +1,56 @@
-abstract class Handler {
-    protected Handler successor = null;
+#include <iostream>
 
-    public Handler(Handler successor) {
-        this.successor = successor;
-    }
+class Handler {
+protected:
+    Handler* successor;
 
-    public abstract void handleRequest();
-}
+public:
+    Handler(Handler* successor) : successor(successor) {}
 
-class ConcreteHandler1 extends Handler {
-    public ConcreteHandler1(Handler successor) {
-        super(successor);
-    }
+    virtual void handleRequest() = 0;
+};
 
-    @Override
-    public void handleRequest() {
+class ConcreteHandler1 : public Handler {
+public:
+    ConcreteHandler1(Handler* successor) : Handler(successor) {}
+
+    void handleRequest() override {
         if (true) {  // Can handle request.
-            System.out.println("Finally handled by ConcreteHandler1");
-        } else if (successor != null) {
-            System.out.println("Message passed to next in chain by ConcreteHandler1");
-            successor.handleRequest();
+            std::cout << "Finally handled by ConcreteHandler1" << std::endl;
+        } else if (successor != nullptr) {
+            std::cout << "Message passed to next in chain by ConcreteHandler1" << std::endl;
+            successor->handleRequest();
         }
     }
-}
+};
 
-class ConcreteHandler2 extends Handler {
-    public ConcreteHandler2(Handler successor) {
-        super(successor);
-    }
+class ConcreteHandler2 : public Handler {
+public:
+    ConcreteHandler2(Handler* successor) : Handler(successor) {}
 
-    @Override
-    public void handleRequest() {
+    void handleRequest() override {
         if (false) {  // Can't handle request.
-            System.out.println("Finally handled by ConcreteHandler2");
-        } else if (successor != null) {
-            System.out.println("Message passed to next in chain by ConcreteHandler2");
-            successor.handleRequest();
+            std::cout << "Finally handled by ConcreteHandler2" << std::endl;
+        } else if (successor != nullptr) {
+            std::cout << "Message passed to next in chain by ConcreteHandler2" << std::endl;
+            successor->handleRequest();
         }
     }
+};
+
+int main() {
+    ConcreteHandler1* ch1 = new ConcreteHandler1(nullptr);
+    ConcreteHandler2* ch2 = new ConcreteHandler2(ch1);
+    ch2->handleRequest();
+
+    // Clean up memory
+    delete ch2;
+    delete ch1;
+
+    return 0;
 }
 
-public class ChainOfResponsibility {
-    public static void main(String[] args) {
-        ConcreteHandler1 ch1 = new ConcreteHandler1(null);
-        ConcreteHandler2 ch2 = new ConcreteHandler2(ch1);
-        ch2.handleRequest();
-    }
-}
+/*
+Message passed to next in chain by ConcreteHandler2
+Finally handled by ConcreteHandler1
+*/

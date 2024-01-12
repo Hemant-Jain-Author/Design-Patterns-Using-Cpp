@@ -1,49 +1,63 @@
+#include <iostream>
+#include <mutex>
+
 class Database {
-    public Database() {
-        System.out.println("Database created");
+public:
+    Database() {
+        std::cout << "Database created" << std::endl;
     }
 
-    public void addData(String data) {
-        System.out.println(data);
+    void addData(const std::string& data) {
+        std::cout << data << std::endl;
     }
-}
+};
 
-//public 
 class Singleton {
-    private static volatile Singleton instance;  // Volatile keyword for double-checked locking
-    private static Database db;
-    private static final Object lock = new Object();  // Add a lock for thread synchronization
+private:
+    static Singleton* instance;
+    static Database* db;
+    static std::mutex instanceMutex;
 
-    private Singleton() {
+    Singleton() {
         db = new Database();
     }
 
-    public static Singleton getInstance() {
-        if (instance == null) {
-            synchronized (lock) {  // Acquire the lock
-                if (instance == null) {
-                    instance = new Singleton();
-                }
+public:
+    static Singleton* getInstance() {
+        if (instance == nullptr) {
+            std::lock_guard<std::mutex> lock(instanceMutex);
+            if (instance == nullptr) {
+                instance = new Singleton();
             }
         }
         return instance;
     }
 
-    public void addData(String data) {
-        db.addData(data);
+    void addData(const std::string& data) {
+        db->addData(data);
     }
+};
+
+// Initialize static members
+Singleton* Singleton::instance = nullptr;
+Database* Singleton::db = nullptr;
+std::mutex Singleton::instanceMutex;
+
+int main() {
+    Singleton* s1 = Singleton::getInstance();
+    Singleton* s2 = Singleton::getInstance();
+
+    std::cout << s1 << std::endl;
+    std::cout << s2 << std::endl;
+
+    s2->addData("Hello, world!");
+
+    return 0;
 }
 
-
-public class DoubleChecking {
-
-    public static void main(String[] args) {
-        Singleton s1 = Singleton.getInstance();
-        Singleton s2 = Singleton.getInstance();
-
-        System.out.println(s1);
-        System.out.println(s2);
-
-        s2.addData("Hello, world!");
-    }
-}
+/*
+Database created
+0x55df73c77eb0
+0x55df73c77eb0
+Hello, world!
+*/

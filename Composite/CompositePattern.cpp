@@ -1,50 +1,60 @@
-import java.util.HashSet;
-import java.util.Set;
+#include <iostream>
+#include <unordered_set>
 
 // Component
-abstract class Component {
-    public abstract void operation();
-}
+class Component {
+public:
+    virtual void operation() = 0;
+    virtual ~Component() = default;
+};
 
 // Composite
-class Composite extends Component {
-    private Set<Component> children = new HashSet<>();
+class Composite : public Component {
+private:
+    std::unordered_set<Component*> children;
 
-    @Override
-    public void operation() {
-        System.out.println("Composite Operation");
-        for (Component child : children) {
-            child.operation();
+public:
+    void operation() override {
+        std::cout << "Composite Operation" << std::endl;
+        for (Component* child : children) {
+            child->operation();
         }
     }
 
-    public void add(Component component) {
-        children.add(component);
+    void add(Component* component) {
+        children.insert(component);
     }
 
-    public void remove(Component component) {
-        children.remove(component);
+    void remove(Component* component) {
+        children.erase(component);
     }
-}
+};
 
 // Leaf
-class Leaf extends Component {
-    @Override
-    public void operation() {
-        System.out.println("Leaf Operation");
+class Leaf : public Component {
+public:
+    void operation() override {
+        std::cout << "Leaf Operation" << std::endl;
     }
-}
+};
 
 // Client code
-public class CompositePattern {
-    public static void main(String[] args) {
-        Composite composite = new Composite();
-        composite.add(new Leaf());
+int main() {
+    Composite composite;
+    composite.add(new Leaf());
 
-        Composite composite2 = new Composite();
-        composite2.add(new Leaf());
+    Composite composite2;
+    composite2.add(new Leaf());
 
-        composite.add(composite2);
-        composite.operation();
-    }
+    composite.add(&composite2);
+    composite.operation();
+
+    return 0;
 }
+
+/*
+Composite Operation
+Composite Operation
+Leaf Operation
+Leaf Operation
+*/

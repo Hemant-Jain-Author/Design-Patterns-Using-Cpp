@@ -1,39 +1,56 @@
-interface BookParser {
-    int numPages();
-}
+#include <iostream>
 
-class ConcreteBookParser implements BookParser {
-    private int numPages;
+class BookParser {
+public:
+    virtual int numPages() = 0;
+};
 
-    public ConcreteBookParser() {
-        System.out.println("Concrete Book Parser Created");
+class ConcreteBookParser : public BookParser {
+private:
+    int _numPages;
+
+public:
+    ConcreteBookParser() {
+        std::cout << "Concrete Book Parser Created" << std::endl;
         // Number of pages calculation heavy operation.
         // Suppose this calculation results in 1000 pages.
-        this.numPages = 1000;
+        this->_numPages = 1000;
     }
 
-    @Override
-    public int numPages() {
-        System.out.println("Concrete Book Parser Request Method");
-        return this.numPages;
+    int numPages() override {
+        std::cout << "Concrete Book Parser Request Method" << std::endl;
+        return this->_numPages;
     }
-}
+};
 
-class LazyBookParserProxy implements BookParser {
-    private ConcreteBookParser subject;
+class LazyBookParserProxy : public BookParser {
+private:
+    ConcreteBookParser* subject;
 
-    @Override
-    public int numPages() {
-        if (subject == null) {
+public:
+    LazyBookParserProxy() : subject(nullptr) {}
+
+    int numPages() override {
+        if (subject == nullptr) {
             subject = new ConcreteBookParser();
         }
-        return subject.numPages();
+        return subject->numPages();
     }
+
+    ~LazyBookParserProxy() {
+        delete subject; // Clean up allocated memory
+    }
+};
+
+int main() {
+    LazyBookParserProxy proxy;
+    std::cout << proxy.numPages() << std::endl;
+
+    return 0;
 }
 
-public class ProxyPatternLazy {
-    public static void main(String[] args) {
-        LazyBookParserProxy proxy = new LazyBookParserProxy();
-        System.out.println(proxy.numPages());
-    }
-}
+/*
+Concrete Book Parser Created
+Concrete Book Parser Request Method
+1000
+*/

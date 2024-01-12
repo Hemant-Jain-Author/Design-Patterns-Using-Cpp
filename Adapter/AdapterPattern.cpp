@@ -1,33 +1,42 @@
+#include <iostream>
+
 // Desired Interface
-interface DesiredInterface {
-    void operation();
-}
-
-// Adapter class
-class Adapter implements DesiredInterface {
-    private Adaptee adaptee;
-
-    public Adapter() {
-        this.adaptee = new Adaptee();
-    }
-
-    @Override
-    public void operation() {
-        adaptee.someOperation();
-    }
-}
+class DesiredInterface {
+public:
+    virtual void operation() = 0;
+    virtual ~DesiredInterface() {} // Virtual destructor for proper cleanup
+};
 
 // Adaptee class
 class Adaptee {
-    public void someOperation() {
-        System.out.println("Adaptee someOperation() function called.");
+public:
+    void someOperation() {
+        std::cout << "Adaptee someOperation() function called." << std::endl;
     }
-}
+};
+
+// Adapter class
+class Adapter : public DesiredInterface {
+private:
+    Adaptee adaptee;
+
+public:
+    void operation() override {
+        adaptee.someOperation();
+    }
+};
 
 // Client Code
-public class AdapterPattern {
-    public static void main(String[] args) {
-        DesiredInterface adapter = new Adapter();
-        adapter.operation();
-    }
+int main() {
+    DesiredInterface* adapter = new Adapter();
+    adapter->operation();
+
+    // Clean up memory
+    delete adapter;
+
+    return 0;
 }
+
+/*
+Adaptee someOperation() function called.
+*/

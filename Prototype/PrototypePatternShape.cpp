@@ -1,91 +1,82 @@
-import java.util.HashMap;
-import java.util.Map;
+#include <iostream>
+#include <unordered_map>
 
-abstract class Shape implements Cloneable {
-    private String color;
+class Shape {
+protected:
+    std::string color;
 
-    public Shape() {
-        this.color = "";
-    }
+public:
+    Shape() : color("") {}
 
-    @Override
-    public abstract String toString();
+    virtual ~Shape() {}
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
+    virtual std::string toString() const = 0;
 
-    public abstract Shape cloneShape();
-}
+    virtual Shape* clone() const = 0;
+};
 
-class Rectangle extends Shape {
-    @Override
-    public String toString() {
+class Rectangle : public Shape {
+public:
+    std::string toString() const override {
         return "Rectangle.";
     }
 
-    @Override
-    public Shape cloneShape() {
-        try {
-            return (Shape) this.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            return null;
-        }
+    Shape* clone() const override {
+        return new Rectangle(*this);
     }
-}
+};
 
-class Circle extends Shape {
-    @Override
-    public String toString() {
+class Circle : public Shape {
+public:
+    std::string toString() const override {
         return "Circle.";
     }
 
-    @Override
-    public Shape cloneShape() {
-        try {
-            return (Shape) this.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-            return null;
-        }
+    Shape* clone() const override {
+        return new Circle(*this);
     }
-}
+};
 
 class ShapeRegistry {
-    private static final Map<String, Shape> shapes = new HashMap<>();
+private:
+    static std::unordered_map<std::string, Shape*> shapes;
 
-    static {
-        load();
+public:
+    static void addShape(const std::string& key, Shape* value) {
+        shapes[key] = value;
     }
 
-    static void addShape(String key, Shape value) {
-        shapes.put(key, value);
-    }
-
-    static Shape getShape(String key) {
-        if (shapes.containsKey(key)) {
-            return shapes.get(key).cloneShape();
+    static Shape* getShape(const std::string& key) {
+        if (shapes.find(key) != shapes.end()) {
+            return shapes[key]->clone();
         }
-        return null;
+        return nullptr;
     }
 
     static void load() {
         addShape("circle", new Circle());
         addShape("rectangle", new Rectangle());
     }
-}
+};
 
-public class PrototypePatternShape {
-    public static void main(String[] args) {
-        ShapeRegistry.load();
-        Shape c = ShapeRegistry.getShape("circle");
-        Shape r = ShapeRegistry.getShape("rectangle");
-        System.out.println(c + " " + r);
+std::unordered_map<std::string, Shape*> ShapeRegistry::shapes;
+
+int main() {
+    ShapeRegistry::load();
+
+    Shape* c = ShapeRegistry::getShape("circle");
+    Shape* r = ShapeRegistry::getShape("rectangle");
+
+    if (c && r) {
+        std::cout << c->toString() << " " << r->toString() << std::endl;
+
+        delete c;
+        delete r;
     }
+
+    return 0;
 }
 
 /*
- Circle. Rectangle.
- */
+Circle. Rectangle.
+*/

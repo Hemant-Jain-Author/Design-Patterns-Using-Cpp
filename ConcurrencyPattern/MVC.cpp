@@ -1,105 +1,105 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+#include <iostream>
+#include <vector>
+#include <string>
+#include <memory>
+#include <sstream>
+#include <algorithm>
 
-// Model
+// Observer interface
+class Observer {
+public:
+    virtual void update() = 0;
+};
+
+// Model class
 class Model {
-    private String data;
-    private List<Observer> observers;
+private:
+    std::string data;
+    std::vector<Observer*> observers;
 
-    public Model() {
-        this.observers = new ArrayList<>();
-    }
-
-    public void setData(String data) {
-        System.out.println("Model : Set data.");
-        this.data = data;
+public:
+    void setData(const std::string& newData) {
+        std::cout << "Model : Set data." << std::endl;
+        data = newData;
         notifyObservers();
     }
 
-    public String getData() {
-        System.out.println("Model : Get data.");
-        return this.data;
+    const std::string& getData() const {
+        std::cout << "Model : Get data." << std::endl;
+        return data;
     }
 
-    public void addObserver(Observer observer) {
-        this.observers.add(observer);
+    void addObserver(Observer* observer) {
+        observers.push_back(observer);
     }
 
-    public void removeObserver(Observer observer) {
-        this.observers.remove(observer);
+    void removeObserver(Observer* observer) {
+        observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
     }
 
-    public void notifyObservers() {
-        System.out.println("Model : Notify observers.");
-        for (Observer observer : observers) {
-            observer.update();
+    void notifyObservers() {
+        std::cout << "Model : Notify observers." << std::endl;
+        for (Observer* observer : observers) {
+            observer->update();
         }
     }
-}
+};
 
-// View
-class View implements Observer {
-    private Controller controller;
-    private Model model;
+// View class
+class View : public Observer {
+private:
+    class Controller* controller;
+    Model* model;
 
-    public View(Model model, Controller controller) {
-        this.model = model;
-        this.controller = controller;
-        this.model.addObserver(this);
+public:
+    View(Model* model, class Controller* controller) : model(model), controller(controller) {
+        model->addObserver(this);
     }
 
-    public void update() {
-        System.out.println("View : Update.");
-        String data = model.getData();
-        System.out.println("Data: " + data);
+    void update() override {
+        std::cout << "View : Update." << std::endl;
+        const std::string& data = model->getData();
+        std::cout << "Data: " << data << std::endl;
     }
 
-    public void getUserInput() {
-        try (Scanner scanner = new Scanner(System.in)) {
-            System.out.print("View : Enter user input: ");
-            //String userInput = "hello, world!";
-            //System.out.println(userInput);
-            String userInput = scanner.nextLine();
-            controller.handleUserInput(userInput);
-        }
-    }
-}
+    void getUserInput() ;
+};
 
-// Controller
+// Controller class
 class Controller {
-    private Model model;
-    private View view;
+private:
+    Model* model;
+    View* view;
 
-    public Controller(Model m) {
-        this.model = m;
+public:
+    Controller(Model* model) : model(model) {}
+
+    void handleUserInput(const std::string& userInput) {
+        std::cout << "Controller : Handle user input." << std::endl;
+        model->setData(userInput);
     }
 
-    public void handleUserInput(String userInput) {
-        System.out.println("Controller : Handle user input.");
-        model.setData(userInput);
-        // Can inform view about action.
+    void setView(View* v) {
+        view = v;
+    }
+};
+
+
+    void View::getUserInput() {
+        std::string userInput;
+        std::cout << "View : Enter user input: ";
+        std::getline(std::cin, userInput);
+        controller->handleUserInput(userInput);
     }
 
-    public void setView(View v) {
-        this.view = v;
-    }
-}
+int main() {
+    Model model;
+    Controller controller(&model);
+    View view(&model, &controller);
+    controller.setView(&view);
+    view.getUserInput();
 
-// Observer interface
-interface Observer {
-    void update();
-}
-
-// Main class
-public class MVC {
-    public static void main(String[] args) {
-        Model model = new Model();
-        Controller controller = new Controller(model);  // The Controller sets itself as the observer in this case
-        View view = new View(model, controller);
-        controller.setView(view);
-        view.getUserInput();
-    }
+    return 0;
 }
 
 /*
@@ -110,4 +110,4 @@ Model : Notify observers.
 View : Update.
 Model : Get data.
 Data: hello, world!
- */
+*/

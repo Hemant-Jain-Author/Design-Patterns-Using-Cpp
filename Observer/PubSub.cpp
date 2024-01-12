@@ -1,70 +1,88 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <unordered_map>
+
+class Subscriber {
+private:
+    std::string id;
+
+public:
+    Subscriber(const std::string& id) : id(id) {}
+
+    std::string getId() const {
+        return id;
+    }
+
+    void update(const std::string& data) const {
+        std::cout << "Subscriber: " << id << " got : " << data << std::endl;
+    }
+
+    // Operator overloading for equality
+    bool operator==(const Subscriber& other) const {
+        return id == other.id;
+    }
+};
 
 class Publisher {
-    private Map<String, List<Subscriber>> topicSubscribers = new HashMap<>();
+private:
+    std::unordered_map<std::string, std::vector<Subscriber>> topicSubscribers;
 
-    public void subscribe(Subscriber subscriber, String topic) {
-        topicSubscribers.computeIfAbsent(topic, k -> new ArrayList<>()).add(subscriber);
-        System.out.println("Subscribing: " + subscriber.getId() + " to topic: " + topic);
+public:
+    void subscribe(const Subscriber& subscriber, const std::string& topic) {
+        topicSubscribers[topic].emplace_back(subscriber);
+        std::cout << "Subscribing: " << subscriber.getId() << " to topic: " << topic << std::endl;
     }
 
-    public void unsubscribe(Subscriber subscriber, String topic) {
-        topicSubscribers.getOrDefault(topic, new ArrayList<>()).remove(subscriber);
-        System.out.println("Unsubscribing: " + subscriber.getId() + " to topic: " + topic);
+    void unsubscribe(const Subscriber& subscriber, const std::string& topic) {
+        auto& subscribers = topicSubscribers[topic];
+        auto it = std::find(subscribers.begin(), subscribers.end(), subscriber);
+
+        if (it != subscribers.end()) {
+            subscribers.erase(it);
+            std::cout << "Unsubscribing: " << subscriber.getId() << " from topic: " << topic << std::endl;
+        } else {
+            std::cout << "Subscriber " << subscriber.getId() << " is not subscribed to topic: " << topic << std::endl;
+        }
     }
 
-    public void notifySubscribers(String data, String topic) {
-        if (topicSubscribers.containsKey(topic)) {
-            System.out.println("Publishing: " + data + " in topic: " + topic);
-            for (Subscriber subscriber : topicSubscribers.get(topic)) {
+    void notifySubscribers(const std::string& data, const std::string& topic) {
+        if (topicSubscribers.find(topic) != topicSubscribers.end()) {
+            std::cout << "Publishing: " << data << " in topic: " << topic << std::endl;
+            for (const auto& subscriber : topicSubscribers[topic]) {
                 subscriber.update(data);
             }
         }
     }
-}
+};
 
-class Subscriber {
-    private String id;
+int main() {
+    Publisher pub;
 
-    public Subscriber(String id) {
-        this.id = id;
-    }
+    Subscriber sub1("Subscriber1");
+    Subscriber sub2("Subscriber2");
+    Subscriber sub3("Subscriber3");
 
-    public String getId() {
-        return id;
-    }
+    std::cout << std::endl;
+    pub.subscribe(sub1, "topic1");
+    pub.subscribe(sub2, "topic2");
+    pub.subscribe(sub3, "topic2");
 
-    public void update(String data) {
-        System.out.println("Subscriber " + id + " got :: " + data);
-    }
-}
+    std::cout << std::endl;
+    pub.notifySubscribers("Topic 1 data", "topic1");
 
-public class PubSub {
-    public static void main(String[] args) {
-        Publisher pub = new Publisher();
+    std::cout << std::endl;
+    pub.notifySubscribers("Topic 2 data", "topic2");
 
-        Subscriber sub1 = new Subscriber("Subscriber1");
-        Subscriber sub2 = new Subscriber("Subscriber2");
-        Subscriber sub3 = new Subscriber("Subscriber3");
+    std::cout << std::endl;
+    pub.unsubscribe(sub3, "topic2");
+    pub.notifySubscribers("Topic 2 data", "topic2");
 
-        System.out.println();
-        pub.subscribe(sub1, "topic1");
-        pub.subscribe(sub2, "topic2");
-        pub.subscribe(sub3, "topic2");
+    // Try to unsubscribe a subscriber not in the list
+    Subscriber sub4("Subscriber4");
+    pub.unsubscribe(sub4, "topic2");
 
-        System.out.println();
-        pub.notifySubscribers("Topic 1 data", "topic1");
-
-        System.out.println();
-        pub.notifySubscribers("Topic 2 data", "topic2");
-
-        System.out.println();
-        pub.unsubscribe(sub3, "topic2");
-        pub.notifySubscribers("Topic 2 data", "topic2");
-    }
+    return 0;
 }
 
 /*
@@ -73,13 +91,14 @@ Subscribing: Subscriber2 to topic: topic2
 Subscribing: Subscriber3 to topic: topic2
 
 Publishing: Topic 1 data in topic: topic1
-Subscriber Subscriber1 got :: Topic 1 data
+Subscriber: Subscriber1 got : Topic 1 data
 
 Publishing: Topic 2 data in topic: topic2
-Subscriber Subscriber2 got :: Topic 2 data
-Subscriber Subscriber3 got :: Topic 2 data
+Subscriber: Subscriber2 got : Topic 2 data
+Subscriber: Subscriber3 got : Topic 2 data
 
-Unsubscribing: Subscriber3 to topic: topic2
+Unsubscribing: Subscriber3 from topic: topic2
 Publishing: Topic 2 data in topic: topic2
-Subscriber Subscriber2 got :: Topic 2 data
+Subscriber: Subscriber2 got : Topic 2 data
+Subscriber Subscriber4 is not subscribed to topic: topic2
 */

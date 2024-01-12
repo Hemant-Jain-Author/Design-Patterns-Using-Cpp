@@ -1,94 +1,124 @@
-import java.util.Scanner;
+#include <iostream>
+#include <string>
+#include <sstream>
+
+// Forward declarations
+class Model;
+class ViewModel;
+class View;
 
 // Model
 class Model {
-    private String data;
+private:
+    std::string data;
 
-    public void setData(String data) {
-        System.out.println("Model: Set data.");
-        this.data = data;
-    }
+public:
+    void setData(const std::string& newData);
 
-    public String getData() {
-        System.out.println("Model: Get data.");
-        return data;
-    }
-}
+    const std::string& getData() const;
+};
 
 // ViewModel
 class ViewModel {
-    private Model model;
-    private String data;
+private:
+    Model* model;
+    std::string data;
 
-    public ViewModel(Model model) {
-        this.model = model;
-        updateData();
-    }
+public:
+    ViewModel(Model* model);
 
-    public void updateModel(String data) {
-        System.out.println("ViewModel: Update data.");
-        model.setData(data);
-        updateData();
-    }
+    void updateModel(const std::string& newData);
 
-    public void updateData() {
-        System.out.println("ViewModel: Fetch data.");
-        data = model.getData();
-    }
+    void updateData();
 
-    public String getData() {
-        return data;
-    }
-}
+    const std::string& getData() const;
+};
 
 // View
 class View {
-    private ViewModel viewModel;
+private:
+    ViewModel* viewModel;
 
-    public View(ViewModel viewModel) {
-        this.viewModel = viewModel;
-    }
+public:
+    View(ViewModel* viewModel);
 
-    public void displayData() {
-        System.out.println("Display Data: " + viewModel.getData());
-    }
+    void displayData() const;
 
-    public void getUserInput() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("View: Enter user input: ");
-        /* 
-        String userInput = "hello, world!";
-        System.out.println(userInput);
-        */
-        String userInput = scanner.nextLine();
-        viewModel.updateModel(userInput);
-    }
+    void getUserInput();
+};
+
+// Model member function definitions
+void Model::setData(const std::string& newData) {
+    std::cout << "Model: Set data." << std::endl;
+    data = newData;
+}
+
+const std::string& Model::getData() const {
+    std::cout << "Model: Get data." << std::endl;
+    return data;
+}
+
+// ViewModel member function definitions
+ViewModel::ViewModel(Model* model) : model(model) {
+    updateData();
+}
+
+void ViewModel::updateModel(const std::string& newData) {
+    std::cout << "ViewModel: Update data." << std::endl;
+    model->setData(newData);
+    updateData();
+}
+
+void ViewModel::updateData() {
+    std::cout << "ViewModel: Fetch data." << std::endl;
+    data = model->getData();
+}
+
+const std::string& ViewModel::getData() const {
+    return data;
+}
+
+// View member function definitions
+View::View(ViewModel* viewModel) : viewModel(viewModel) {}
+
+void View::displayData() const {
+    std::cout << "Display Data: " << viewModel->getData() << std::endl;
+}
+
+void View::getUserInput() {
+    std::string userInput;
+    std::cout << "View: Enter user input: ";
+    // std::getline(std::cin, userInput); // Uncomment for user input
+
+    // Simulating user input
+    userInput = "hello, world!";
+    std::cout << userInput << std::endl;
+
+    viewModel->updateModel(userInput);
 }
 
 // Client code
-public class MVVM {
-    public static void main(String[] args) {
-        Model model = new Model();
-        ViewModel viewModel = new ViewModel(model);
-        View view = new View(viewModel);
+int main() {
+    Model model;
+    ViewModel viewModel(&model);
+    View view(&viewModel);
 
-        // Display initial data
-        view.displayData();
+    // Display initial data
+    view.displayData();
 
-        // Get user input and update data
-        view.getUserInput();
+    // Get user input and update data
+    view.getUserInput();
 
-        // Display updated data
-        view.displayData();
-    }
+    // Display updated data
+    view.displayData();
+
+    return 0;
 }
-
-
 
 /*
 ViewModel: Fetch data.
 Model: Get data.
-Display Data: null
+Display Data: 
 View: Enter user input: hello, world!
 ViewModel: Update data.
 Model: Set data.

@@ -1,38 +1,41 @@
-import java.util.ArrayList;
-import java.util.List;
+#include <iostream>
+#include <vector>
 
 class Tyre {
-    private String type;
+private:
+    std::string type;
 
-    public Tyre(String type) {
-        this.type = type;
-    }
+public:
+    Tyre(const std::string& type) : type(type) {}
 
-    public String getType() {
+    std::string getType() const {
         return type;
     }
-}
+};
 
 class Car {
-    private String model;
-    private List<Tyre> tyres;
+private:
+    std::string model;
+    std::vector<Tyre> tyres;
 
-    public Car(String model) {
-        this.model = model;
-        this.tyres = new ArrayList<>();
+public:
+    Car(const std::string& model) : model(model) {
         for (int i = 0; i < 4; i++) {
-            this.tyres.add(new Tyre("MRF"));
+            tyres.push_back(Tyre("MRF"));
         }
     }
 
-    public void display() {
-        System.out.println("Car: " + model + ", Tyre: " + tyres.get(0).getType());
+    void display() const {
+        std::cout << "Car: " << model << ", Tyre: " << tyres[0].getType() << std::endl;
     }
-}
+};
 
-public class CompositionRelationship {
-    public static void main(String[] args) {
-        Car car = new Car("BMW");
-        car.display();
-    }
+int main() {
+    Car car("BMW");
+    car.display();
+
+    return 0;
 }
+/*
+Car: BMW, Tyre: MRF
+*/

@@ -1,61 +1,74 @@
-import java.util.HashMap;
-import java.util.Map;
+#include <iostream>
+#include <unordered_map>
 
-abstract class Prototype implements Cloneable {
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+class Prototype {
+public:
+    virtual ~Prototype() {}
+    virtual void display() = 0;
+    virtual Prototype* clone() const = 0;
+};
+
+class ConcretePrototype1 : public Prototype {
+public:
+    void display() override {
+        std::cout << "ConcretePrototype1" << std::endl;
     }
 
-    abstract void display();
-}
-
-class ConcretePrototype1 extends Prototype {
-    @Override
-    void display() {
-        System.out.println("ConcretePrototype1");
+    Prototype* clone() const override {
+        return new ConcretePrototype1(*this);
     }
-}
+};
 
-class ConcretePrototype2 extends Prototype {
-    @Override
-    void display() {
-        System.out.println("ConcretePrototype2");
+class ConcretePrototype2 : public Prototype {
+public:
+    void display() override {
+        std::cout << "ConcretePrototype2" << std::endl;
     }
-}
+
+    Prototype* clone() const override {
+        return new ConcretePrototype2(*this);
+    }
+};
 
 class PrototypeRegistry {
-    private static final Map<String, Prototype> prototypes = new HashMap<>();
+private:
+    static std::unordered_map<std::string, Prototype*> prototypes;
 
-    static {
-        load();
+public:
+    static void addPrototype(const std::string& key, Prototype* value) {
+        prototypes[key] = value;
     }
 
-    static void addPrototype(String key, Prototype value) {
-        prototypes.put(key, value);
-    }
-
-    static Prototype getPrototype(String key) throws CloneNotSupportedException {
-        if (prototypes.containsKey(key)) {
-            return (Prototype) prototypes.get(key).clone();
+    static Prototype* getPrototype(const std::string& key) {
+        if (prototypes.find(key) != prototypes.end()) {
+            return prototypes[key]->clone();
         }
-        return null;
+        return nullptr;
     }
 
     static void load() {
         addPrototype("CP1", new ConcretePrototype1());
         addPrototype("CP2", new ConcretePrototype2());
     }
-}
+};
 
-public class PrototypePattern {
-    public static void main(String[] args) throws CloneNotSupportedException {
-        PrototypeRegistry.load();
-        Prototype c1 = PrototypeRegistry.getPrototype("CP1");
-        Prototype c2 = PrototypeRegistry.getPrototype("CP2");
-        c1.display();
-        c2.display();
+std::unordered_map<std::string, Prototype*> PrototypeRegistry::prototypes;
+
+int main() {
+    PrototypeRegistry::load();
+
+    Prototype* c1 = PrototypeRegistry::getPrototype("CP1");
+    Prototype* c2 = PrototypeRegistry::getPrototype("CP2");
+
+    if (c1 && c2) {
+        c1->display();
+        c2->display();
+
+        delete c1;
+        delete c2;
     }
+
+    return 0;
 }
 
 /*

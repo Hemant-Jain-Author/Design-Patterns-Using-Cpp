@@ -1,49 +1,50 @@
+#include <iostream>
+
 // Subsystem1
 class Subsystem1 {
-    public void operation1() {
-        System.out.println("Subsystem1 operation1");
+public:
+    void operation1() {
+        std::cout << "Subsystem1 operation1" << std::endl;
     }
 
-    public void operation2() {
-        System.out.println("Subsystem1 operation2");
+    void operation2() {
+        std::cout << "Subsystem1 operation2" << std::endl;
     }
-}
+};
 
 // Subsystem2
 class Subsystem2 {
-    public void operation1() {
-        System.out.println("Subsystem2 operation1");
+public:
+    void operation1() {
+        std::cout << "Subsystem2 operation1" << std::endl;
     }
 
-    public void operation2() {
-        System.out.println("Subsystem2 operation2");
+    void operation2() {
+        std::cout << "Subsystem2 operation2" << std::endl;
     }
-}
+};
 
 // SystemManagerFacade
 class SystemManagerFacade {
-    private Subsystem1 subsystem1;
-    private Subsystem2 subsystem2;
+private:
+    Subsystem1 subsystem1;
+    Subsystem2 subsystem2;
 
-    public SystemManagerFacade() {
-        this.subsystem1 = new Subsystem1();
-        this.subsystem2 = new Subsystem2();
-    }
-
-    public void operation() {
+public:
+    void operation() {
         subsystem1.operation1();
         subsystem1.operation2();
         subsystem2.operation1();
         subsystem2.operation2();
     }
-}
+};
 
 // Client code
-public class Facad {
-    public static void main(String[] args) {
-        SystemManagerFacade facade = new SystemManagerFacade();
-        facade.operation();
-    }
+int main() {
+    SystemManagerFacade facade;
+    facade.operation();
+
+    return 0;
 }
 
 /*

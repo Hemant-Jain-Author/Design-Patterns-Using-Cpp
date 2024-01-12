@@ -1,63 +1,72 @@
-// Agent (Invoker)
-class Agent {
-    public void placeOrder(Order command) {
-        command.execute();
-    }
-}
-
-// Order (Command)
-abstract class Order {
-    public abstract void execute();
-}
-
-// BuyStockOrder (ConcreteCommand)
-class BuyStockOrder extends Order {
-    private ReceiverStockTrade stock;
-
-    public BuyStockOrder(ReceiverStockTrade stock) {
-        this.stock = stock;
-    }
-
-    @Override
-    public void execute() {
-        stock.buy();
-    }
-}
-
-// SellStockOrder (ConcreteCommand)
-class SellStockOrder extends Order {
-    private ReceiverStockTrade stock;
-
-    public SellStockOrder(ReceiverStockTrade stock) {
-        this.stock = stock;
-    }
-
-    @Override
-    public void execute() {
-        stock.sell();
-    }
-}
+#include <iostream>
 
 // Receiver
 class ReceiverStockTrade {
-    public void buy() {
-        System.out.println("Buy stocks");
+public:
+    void buy() {
+        std::cout << "Buy stocks" << std::endl;
     }
 
-    public void sell() {
-        System.out.println("Sell stocks");
+    void sell() {
+        std::cout << "Sell stocks" << std::endl;
     }
-}
+};
+
+// Order (Command)
+class Order {
+public:
+    virtual void execute() = 0;
+    virtual ~Order() = default;
+};
+
+// BuyStockOrder (ConcreteCommand)
+class BuyStockOrder : public Order {
+private:
+    ReceiverStockTrade* stock;
+
+public:
+    BuyStockOrder(ReceiverStockTrade* stock) : stock(stock) {}
+
+    void execute() override {
+        stock->buy();
+    }
+};
+
+// SellStockOrder (ConcreteCommand)
+class SellStockOrder : public Order {
+private:
+    ReceiverStockTrade* stock;
+
+public:
+    SellStockOrder(ReceiverStockTrade* stock) : stock(stock) {}
+
+    void execute() override {
+        stock->sell();
+    }
+};
+
+// Agent (Invoker)
+class Agent {
+public:
+    void placeOrder(Order* command) {
+        command->execute();
+    }
+};
 
 // Client code
-public class CommandPatternStock {
-    public static void main(String[] args) {
-        ReceiverStockTrade trader = new ReceiverStockTrade();
-        BuyStockOrder buyStock = new BuyStockOrder(trader);
-        SellStockOrder sellStock = new SellStockOrder(trader);
+int main() {
+    ReceiverStockTrade trader;
+    BuyStockOrder buyStock(&trader);
+    SellStockOrder sellStock(&trader);
 
-        Agent agent = new Agent();
-        agent.placeOrder(buyStock);
-        agent.placeOrder(sellStock);
-    }
+    Agent agent;
+    agent.placeOrder(&buyStock);
+    agent.placeOrder(&sellStock);
+
+    return 0;
 }
+
+/*
+Buy stocks
+Sell stocks
+*/

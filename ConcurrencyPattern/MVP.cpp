@@ -1,82 +1,105 @@
-import java.util.Scanner;
+#include <iostream>
+#include <string>
 
-// Model
-class Model {
-    private String data;
-    private Presenter presenter;
+// Forward declarations
+class Presenter;
+class Model;
 
-    public void setData(String data) {
-        System.out.println("Model: Set data.");
-        this.data = data;
-        presenter.modelUpdateEvent();
-    }
-
-    public String getData() {
-        System.out.println("Model: Get data.");
-        return data;
-    }
-
-    public void setPresenter(Presenter presenter) {
-        this.presenter = presenter;
-    }
-}
-
-// Presenter
-class Presenter {
-    private Model model;
-    private View view;
-
-    public Presenter(Model model, View view) {
-        this.model = model;
-        this.view = view;
-    }
-
-    public void handleUserInput(String userInput) {
-        System.out.println("Presenter: Handle user input.");
-        model.setData(userInput);
-    }
-
-    public void modelUpdateEvent() {
-        System.out.println("Presenter: Model update event.");
-        view.update(model.getData());
-    }
-}
-
-// View
 class View {
-    private Presenter presenter;
+private:
+    Presenter* presenter;
 
-    public void update(String data) {
-        System.out.println("View: Update UI.");
-        System.out.println("Data: " + data);
-    }
+public:
+    void update(const std::string& data);
 
-    public void setPresenter(Presenter presenter) {
-        this.presenter = presenter;
-    }
+    void setPresenter(Presenter* newPresenter);
 
-    public void getUserInput() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("View: Enter user input: ");
-        String userInput = "hello, world!";
-        System.out.println(userInput);
-        //String userInput = scanner.nextLine();
-        presenter.handleUserInput(userInput);
-    }
+    void getUserInput();
+};
+
+class Model {
+private:
+    std::string data;
+    Presenter* presenter;
+
+public:
+    void setData(const std::string& newData);
+
+    const std::string& getData() const;
+
+    void setPresenter(Presenter* newPresenter);
+};
+
+class Presenter {
+private:
+    Model* model;
+    View* view;
+
+public:
+    Presenter(Model* newModel, View* newView);
+
+    void handleUserInput(const std::string& userInput);
+
+    void modelUpdateEvent();
+};
+
+// View member function definitions
+void View::update(const std::string& data) {
+    std::cout << "View: Update UI." << std::endl;
+    std::cout << "Data: " << data << std::endl;
 }
 
-// Client code
-public class MVP {
-    public static void main(String[] args) {
-        Model model = new Model();
-        View view = new View();
-        Presenter presenter = new Presenter(model, view);
+void View::setPresenter(Presenter* newPresenter) {
+    presenter = newPresenter;
+}
 
-        model.setPresenter(presenter);
-        view.setPresenter(presenter);
+void View::getUserInput() {
+    std::cout << "View: Enter user input: ";
+    std::string userInput = "hello, world!"; // Simulating user input
+    std::cout << userInput << std::endl;
+    presenter->handleUserInput(userInput);
+}
 
-        view.getUserInput();
-    }
+// Model member function definitions
+void Model::setData(const std::string& newData) {
+    std::cout << "Model: Set data." << std::endl;
+    data = newData;
+    presenter->modelUpdateEvent();
+}
+
+const std::string& Model::getData() const {
+    std::cout << "Model: Get data." << std::endl;
+    return data;
+}
+
+void Model::setPresenter(Presenter* newPresenter) {
+    presenter = newPresenter;
+}
+
+// Presenter member function definitions
+Presenter::Presenter(Model* newModel, View* newView) : model(newModel), view(newView) {}
+
+void Presenter::handleUserInput(const std::string& userInput) {
+    std::cout << "Presenter: Handle user input." << std::endl;
+    model->setData(userInput);
+}
+
+void Presenter::modelUpdateEvent() {
+    std::cout << "Presenter: Model update event." << std::endl;
+    view->update(model->getData());
+}
+
+int main() {
+    Model model;
+    View view;
+    Presenter presenter(&model, &view);
+
+    model.setPresenter(&presenter);
+    view.setPresenter(&presenter);
+
+    view.getUserInput();
+
+    return 0;
 }
 
 /*
@@ -86,5 +109,5 @@ Model: Set data.
 Presenter: Model update event.
 Model: Get data.
 View: Update UI.
-Data: hello, world! 
- */
+Data: hello, world!
+*/

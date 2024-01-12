@@ -1,47 +1,54 @@
+#include <iostream>
+#include <string>
+
 class Person {
-    protected String name;
-    protected int age;
-    protected String gender;
+protected:
+    std::string name;
+    int age;
+    std::string gender;
 
-    public Person(String name, int age, String gender) {
-        this.name = name;
-        this.age = age;
-        this.gender = gender;
+public:
+    Person(const std::string& name, int age, const std::string& gender)
+        : name(name), age(age), gender(gender) {}
+
+    virtual std::string toString() const {
+        return "Person: " + name + " is a " + gender + " and " + std::to_string(age) + " years old.";
     }
 
-    public String toString() {
-        return String.format("Person: %s is a %s and %s years old.", name, gender, age);
-    }
-
-    public String getGender() {
+    std::string getGender() const {
         return gender;
     }
-}
+};
 
-class Citizen extends Person {
-    private int id;
+class Citizen : public Person {
+private:
+    int id;
 
-    public Citizen(String name, int age, int id, String gender) {
-        super(name, age, gender);
-        this.id = id;
-    }
+public:
+    Citizen(const std::string& name, int age, int id, const std::string& gender)
+        : Person(name, age, gender), id(id) {}
 
-    public int getVoterId() {
+    int getVoterId() const {
         return id;
     }
 
-    @Override
-    public String toString() {
-        return String.format("Citizen: %s is a %s and %s years old with voter id %s.", name, gender, age, id);
+    std::string toString() const override {
+        return "Citizen: " + name + " is a " + gender + " and " + std::to_string(age) +
+               " years old with voter id " + std::to_string(id) + ".";
     }
+};
+
+int main() {
+    Person p("John", 32, "Male");
+    std::cout << p.toString() << std::endl;
+
+    Citizen c("Smith", 31, 1234, "Male");
+    std::cout << c.toString() << std::endl;
+
+    return 0;
 }
 
-public class Inheritance {
-    public static void main(String[] args) {
-        Person p = new Person("John", 32, "Male");
-        System.out.println(p);
-
-        Citizen c = new Citizen("Smith", 31, 1234, "Male");
-        System.out.println(c);
-    }
-}
+/*
+Person: John is a Male and 32 years old.
+Citizen: Smith is a Male and 31 years old with voter id 1234.
+*/

@@ -1,59 +1,84 @@
-interface BulbState {
-    void flip(BulbControl bc);
-    String toString();
-}
+#include <iostream>
+#include <string>
+
+class BulbControl;
+
+class BulbState {
+public:
+    virtual void flip(BulbControl& bc) = 0;
+    virtual std::string toString() const = 0;
+    virtual ~BulbState() {}
+};
+
+class On : public BulbState {
+public:
+    void flip(BulbControl& bc) override;
+    std::string toString() const override;
+};
+
+class Off : public BulbState {
+public:
+    void flip(BulbControl& bc) override;
+    std::string toString() const override;
+};
 
 class BulbControl {
-    private BulbState current;
+private:
+    BulbState* current;
 
+public:
     BulbControl() {
-        this.current = new Off();
+        this->current = new Off();
     }
 
-    void setState(BulbState state) {
-        this.current = state;
+    void setState(BulbState* state) {
+        delete this->current;
+        this->current = state;
     }
 
     void flip() {
-        this.current.flip(this);
+        this->current->flip(*this);
     }
 
-    String toStringState() {
-        return this.current.toString();
+    std::string toStringState() const {
+        return this->current->toString();
     }
+
+    ~BulbControl() {
+        delete this->current;
+    }
+};
+
+
+
+void On::flip(BulbControl& bc) {
+    bc.setState(new Off());
 }
 
-class On implements BulbState {
-    @Override
-    public void flip(BulbControl bc) {
-        bc.setState(new Off());
-    }
-
-    @Override
-    public String toString() {
-        return "On";
-    }
+std::string On::toString() const {
+    return "On";
 }
 
-class Off implements BulbState {
-    @Override
-    public void flip(BulbControl bc) {
-        bc.setState(new On());
-    }
-
-    @Override
-    public String toString() {
-        return "Off";
-    }
+void Off::flip(BulbControl& bc) {
+    bc.setState(new On());
 }
 
-// Client code.
-public class StatePattern {
-    public static void main(String[] args) {
-        BulbControl c = new BulbControl();
-        c.flip();
-        System.out.println(c.toStringState());
-        c.flip();
-        System.out.println(c.toStringState());
-    }
+std::string Off::toString() const {
+    return "Off";
 }
+
+int main() {
+    // Example usage
+    BulbControl c;
+    c.flip();
+    std::cout << c.toStringState() << std::endl;
+    c.flip();
+    std::cout << c.toStringState() << std::endl;
+
+    return 0;
+}
+
+/*
+On
+Off
+*/

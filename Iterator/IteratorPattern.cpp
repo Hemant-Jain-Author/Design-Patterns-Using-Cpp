@@ -1,71 +1,83 @@
-import java.util.ArrayList;
-import java.util.List;
+#include <iostream>
+#include <vector>
 
-interface Iterator {
-    int next();
-    boolean hasNext();
-}
+// Iterator interface
+class Iterator {
+public:
+    virtual int next() = 0;
+    virtual bool hasNext() = 0;
+    virtual ~Iterator() = default;
+};
 
-interface Aggregate {
-    Iterator getIterator();
-}
+// Aggregate interface
+class Aggregate {
+public:
+    virtual Iterator* getIterator() = 0;
+    virtual ~Aggregate() = default;
+};
 
-class ConcreteIterator implements Iterator {
-    private ConcreteAggregate aggregate;
-    private int index;
 
-    public ConcreteIterator(ConcreteAggregate aggregate) {
-        this.aggregate = aggregate;
-        this.index = 0;
+// Concrete Aggregate
+class ConcreteAggregate : public Aggregate {
+private:
+    std::vector<int> data;
+
+public:
+    void addData(int val) {
+        data.push_back(val);
     }
 
-    @Override
-    public int next() {
-        if (index >= aggregate.getData().size()) {
-            throw new IndexOutOfBoundsException();
+    Iterator* getIterator() override; 
+
+    const std::vector<int>& getData() const {
+        return data;
+    }
+};
+
+// Concrete Iterator
+class ConcreteIterator : public Iterator {
+private:
+    ConcreteAggregate* aggregate;
+    int index;
+
+public:
+    ConcreteIterator(ConcreteAggregate* aggregate) : aggregate(aggregate), index(0) {}
+
+    int next() override {
+        if (index >= aggregate->getData().size()) {
+            throw std::out_of_range("Index out of bounds");
         }
-        int value = aggregate.getData().get(index);
+        int value = aggregate->getData()[index];
         index++;
         return value;
     }
 
-    @Override
-    public boolean hasNext() {
-        return index < aggregate.getData().size();
+    bool hasNext() override {
+        return index < aggregate->getData().size();
     }
+};
+
+Iterator* ConcreteAggregate::getIterator() {
+    return new ConcreteIterator(this);
 }
 
-class ConcreteAggregate implements Aggregate {
-    private List<Integer> data;
 
-    public ConcreteAggregate() {
-        this.data = new ArrayList<>();
+int main() {
+    ConcreteAggregate aggregate;
+    for (int i = 0; i < 5; i++) {
+        aggregate.addData(i);
     }
 
-    public void addData(int val) {
-        data.add(val);
+    Iterator* iterator = aggregate.getIterator();
+    while (iterator->hasNext()) {
+        std::cout << iterator->next() << " ";
     }
 
-    @Override
-    public Iterator getIterator() {
-        return new ConcreteIterator(this);
-    }
+    delete iterator;
 
-    public List<Integer> getData() {
-        return data;
-    }
+    return 0;
 }
 
-public class IteratorPattern {
-    public static void main(String[] args) {
-        ConcreteAggregate aggregate = new ConcreteAggregate();
-        for (int i = 0; i < 5; i++) {
-            aggregate.addData(i);
-        }
-
-        Iterator iterator = aggregate.getIterator();
-        while (iterator.hasNext()) {
-            System.out.print(iterator.next() + " ");
-        }
-    }
-}
+/*
+0 1 2 3 4 
+*/

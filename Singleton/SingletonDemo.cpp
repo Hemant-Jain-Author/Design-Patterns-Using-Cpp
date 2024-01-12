@@ -1,49 +1,57 @@
+#include <iostream>
+
 class Database {
-    public Database() {
-        System.out.println("Database created");
+public:
+    Database() {
+        std::cout << "Database created" << std::endl;
     }
 
-    public void addData(String data) {
-        System.out.println(data);
+    void addData(const std::string& data) {
+        std::cout << data << std::endl;
     }
-}
+};
 
 class Singleton {
-    private static Singleton instance = null;
-    private Database db;
+private:
+    static Singleton* instance;
+    Database db;
 
-    private Singleton() {
+    Singleton() {
         instance = this;
-        db = new Database();
     }
 
-    public static Singleton getInstance() {
-        if (instance == null) {
-            new Singleton();
+public:
+    static Singleton* getInstance() {
+        if (instance == nullptr) {
+            instance = new Singleton();
         }
         return instance;
     }
 
-    public void addData(String data) {
+    void addData(const std::string& data) {
         db.addData(data);
     }
-}
+};
 
-public class SingletonDemo {
-    public static void main(String[] args) {
-        Singleton s1 = Singleton.getInstance();
-        Singleton s2 = Singleton.getInstance();
+Singleton* Singleton::instance = nullptr;
 
-        System.out.println(s1);
-        System.out.println(s2);
+int main() {
+    Singleton* s1 = Singleton::getInstance();
+    Singleton* s2 = Singleton::getInstance();
 
-        s2.addData("Hello, world!");
-    }
+    std::cout << s1 << std::endl;
+    std::cout << s2 << std::endl;
+
+    s2->addData("Hello, world!");
+
+    delete s1;  // Clean up allocated instance
+
+    return 0;
 }
 
 /*
 Database created
-Singleton@7344699f
-Singleton@7344699f
+0x55ad35ddeeb0
+0x55ad35ddeeb0
 Hello, world!
- */
+*/

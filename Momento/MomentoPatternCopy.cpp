@@ -1,47 +1,45 @@
-import java.util.ArrayList;
-import java.util.List;
+#include <iostream>
+#include <vector>
 
 // Memento
 class Memento {
-    private String state;
+private:
+    std::string state;
 
-    public Memento(String state) {
-        this.state = state;
-    }
+public:
+    Memento(const std::string& state) : state(state) {}
 
-    public String getState() {
+    const std::string& getState() const {
         return state;
     }
-}
+};
 
 // CareTaker
 class CareTaker {
-    private List<Memento> history;
-    private int top;
-    private int max;
+private:
+    std::vector<Memento> history;
+    int top;
+    int max;
 
-    public CareTaker() {
-        this.history = new ArrayList<>();
-        this.top = -1;
-        this.max = -1;
-    }
+public:
+    CareTaker() : top(-1), max(-1) {}
 
-    public void addMemento(Memento m) {
+    void addMemento(const Memento& m) {
         top += 1;
         max = top;
-        if (top <= history.size() - 1) {
-            history.set(top, m);
+        if (top <= static_cast<int>(history.size()) - 1) {
+            history[top] = m;
         } else {
-            history.add(m);
+            history.push_back(m);
         }
     }
 
-    public Memento getMemento(int index) {
-        return history.get(index);
+    const Memento& getMemento(int index) const {
+        return history[index];
     }
 
-    public Memento undo() {
-        System.out.println("Undoing state.");
+    Memento undo() {
+        std::cout << "Undoing state." << std::endl;
         if (top <= 0) {
             top = 0;
             return getMemento(0);
@@ -51,9 +49,9 @@ class CareTaker {
         return getMemento(top);
     }
 
-    public Memento redo() {
-        System.out.println("Redoing state.");
-        if (top >= (history.size() - 1) || top >= max) {
+    Memento redo() {
+        std::cout << "Redoing state." << std::endl;
+        if (top >= static_cast<int>(history.size()) - 1 || top >= max) {
             return getMemento(top);
         }
 
@@ -61,69 +59,81 @@ class CareTaker {
         return getMemento(top);
     }
 
-    public int getStatesCount() {
+    int getStatesCount() const {
         return history.size();
     }
-}
+};
 
 // Originator
 class Originator {
-    private String state;
-    private CareTaker careTaker;
+private:
+    std::string state;
+    CareTaker careTaker;
 
-    public Originator() {
-        this.careTaker = new CareTaker();
-    }
-
-    public void setState(String state) {
-        this.state = state;
+public:
+    void setState(const std::string& state) {
+        this->state = state;
         careTaker.addMemento(createMemento());
     }
 
-    public String getState() {
+    const std::string& getState() const {
         return state;
     }
 
-    public Memento createMemento() {
-        return new Memento(state);
+    Memento createMemento() const {
+        return Memento(state);
     }
 
-    public void setMemento(Memento m) {
+    void setMemento(const Memento& m) {
         state = m.getState();
     }
 
-    public void undo() {
+    void undo() {
         setMemento(careTaker.undo());
     }
 
-    public void redo() {
+    void redo() {
         setMemento(careTaker.redo());
     }
-}
+};
 
 // Client code
-public class MomentoPatternCopy {
-    public static void main(String[] args) {
-        Originator originator = new Originator();
-        originator.setState("State 1");
-        System.out.println(originator.getState());
+int main() {
+    Originator originator;
+    originator.setState("State 1");
+    std::cout << originator.getState() << std::endl;
 
-        originator.setState("State 2");
-        System.out.println(originator.getState());
+    originator.setState("State 2");
+    std::cout << originator.getState() << std::endl;
 
-        originator.setState("State 3");
-        System.out.println(originator.getState());
+    originator.setState("State 3");
+    std::cout << originator.getState() << std::endl;
 
-        originator.undo();
-        System.out.println(originator.getState());
+    originator.undo();
+    std::cout << originator.getState() << std::endl;
 
-        originator.undo();
-        System.out.println(originator.getState());
+    originator.undo();
+    std::cout << originator.getState() << std::endl;
 
-        originator.redo();
-        System.out.println(originator.getState());
+    originator.redo();
+    std::cout << originator.getState() << std::endl;
 
-        originator.redo();
-        System.out.println(originator.getState());
-    }
+    originator.redo();
+    std::cout << originator.getState() << std::endl;
+
+    return 0;
 }
+
+/*
+State 1
+State 2
+State 3
+Undoing state.
+State 2
+Undoing state.
+State 1
+Redoing state.
+State 2
+Redoing state.
+State 3
+*/

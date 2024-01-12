@@ -1,39 +1,56 @@
+#include <iostream>
+#include <thread>
+#include <string>
+#include <mutex>
 
-public class ThreadLocalValue {
+class ThreadLocalValue {
+private:
     // ThreadLocal variable
-    private static final ThreadLocal<String> tlsVar = new ThreadLocal<>();
+    static thread_local std::string tlsVar;
 
     // Function to set thread-local value
-    private static void setTLSValue(String value) {
-        tlsVar.set(value);
+    static void setTLSValue(const std::string& value) {
+        tlsVar = value;
     }
 
     // Function to get thread-local value
-    private static String getTLSValue() {
-        return tlsVar.get();
+    static const std::string& getTLSValue() {
+        return tlsVar;
     }
 
     // Worker thread function
-    private static void workerThread() {
-        setTLSValue("Thread-specific any value");
-        System.out.println(getTLSValue());
+    static void workerThread(const int id) {
+        const std::string value = "Thread-specific value: " + std::to_string(id);
+        setTLSValue(value);
+        std::cout << getTLSValue() << std::endl;
     }
 
-    public static void main(String[] args) {
+public:
+    static void main() {
         // Create and start multiple worker threads
-        Thread[] threads = new Thread[3];
+        std::thread threads[3];
+
         for (int i = 0; i < 3; i++) {
-            threads[i] = new Thread(ThreadLocalValue::workerThread);
-            threads[i].start();
+            threads[i] = std::thread([i] { workerThread(i); });
         }
 
         // Wait for all threads to complete
-        try {
-            for (Thread t : threads) {
-                t.join();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        for (auto& t : threads) {
+            t.join();
         }
     }
+};
+
+// Initialize thread-local variable
+thread_local std::string ThreadLocalValue::tlsVar;
+
+int main() {
+    ThreadLocalValue::main();
+    return 0;
 }
+
+/*
+Thread-specific value: 0
+Thread-specific value: 1
+Thread-specific value: 2
+*/

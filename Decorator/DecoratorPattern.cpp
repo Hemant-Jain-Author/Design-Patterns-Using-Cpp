@@ -1,66 +1,75 @@
+#include <iostream>
+
 // Component
-interface Component {
-    void operation();
-}
+class Component {
+public:
+    virtual void operation() = 0;
+    virtual ~Component() = default;
+};
 
 // ConcreteComponent
-class ConcreteComponent implements Component {
-    @Override
-    public void operation() {
-        System.out.println("ConcreteComponent operation.");
+class ConcreteComponent : public Component {
+public:
+    void operation() override {
+        std::cout << "ConcreteComponent operation." << std::endl;
     }
-}
+};
 
 // Decorator
-abstract class Decorator implements Component {
-    private Component component;
+class Decorator : public Component {
+private:
+    Component* component;
 
-    public Decorator(Component component) {
-        this.component = component;
+public:
+    Decorator(Component* component) : component(component) {}
+
+    void operation() override {
+        if (component) {
+            component->operation();
+        }
     }
 
-    @Override
-    public void operation() {
-        component.operation();
+    virtual ~Decorator() {
+        delete component;
     }
-}
+};
 
 // ConcreteDecorator1
-class ConcreteDecorator1 extends Decorator {
-    public ConcreteDecorator1(Component component) {
-        super(component);
-    }
+class ConcreteDecorator1 : public Decorator {
+public:
+    ConcreteDecorator1(Component* component) : Decorator(component) {}
 
-    @Override
-    public void operation() {
-        System.out.println("ConcreteDecorator1 operation start.");
-        super.operation();
-        System.out.println("ConcreteDecorator1 operation end.");
+    void operation() override {
+        std::cout << "ConcreteDecorator1 operation start." << std::endl;
+        Decorator::operation();
+        std::cout << "ConcreteDecorator1 operation end." << std::endl;
     }
-}
+};
 
 // ConcreteDecorator2
-class ConcreteDecorator2 extends Decorator {
-    public ConcreteDecorator2(Component component) {
-        super(component);
-    }
+class ConcreteDecorator2 : public Decorator {
+public:
+    ConcreteDecorator2(Component* component) : Decorator(component) {}
 
-    @Override
-    public void operation() {
-        System.out.println("ConcreteDecorator2 operation start.");
-        super.operation();
-        System.out.println("ConcreteDecorator2 operation end.");
+    void operation() override {
+        std::cout << "ConcreteDecorator2 operation start." << std::endl;
+        Decorator::operation();
+        std::cout << "ConcreteDecorator2 operation end." << std::endl;
     }
-}
+};
 
 // Client code
-public class DecoratorPattern {
-    public static void main(String[] args) {
-        Component component = new ConcreteComponent();
-        Decorator decorator1 = new ConcreteDecorator1(component);
-        Decorator decorator2 = new ConcreteDecorator2(decorator1);
-        decorator2.operation();
-    }
+int main() {
+    Component* component = new ConcreteComponent();
+    Decorator* decorator1 = new ConcreteDecorator1(component);
+    Decorator* decorator2 = new ConcreteDecorator2(decorator1);
+
+    decorator2->operation();
+
+    // Clean up dynamically allocated memory
+    delete decorator2;
+
+    return 0;
 }
 
 /*
@@ -69,4 +78,4 @@ ConcreteDecorator1 operation start.
 ConcreteComponent operation.
 ConcreteDecorator1 operation end.
 ConcreteDecorator2 operation end.
- */
+*/

@@ -1,57 +1,60 @@
+#include <iostream>
+#include <string>
+
 class Model {
-    private String data;
+private:
+    std::string data;
 
-    public Model() {
-        this.data = "Hello, World!";
+public:
+    Model() : data("Hello, World!") {}
+
+    void setData(const std::string& data) {
+        std::cout << "Model: Set data : " << data << std::endl;
+        this->data = data;
     }
 
-    public void setData(String data) {
-        System.out.println("Model: Set data : " + data);
-        this.data = data;
-    }
-
-    public String getData() {
-        System.out.println("Model: Get data: " + data);
+    const std::string& getData() const {
+        std::cout << "Model: Get data: " << data << std::endl;
         return data;
     }
-}
+};
 
 class View {
-    public void update(String data) {
-        System.out.println("View: Updating the view with data: " + data);
+public:
+    void update(const std::string& data) const {
+        std::cout << "View: Updating the view with data: " << data << std::endl;
     }
-}
+};
 
 class Presenter {
-    private Model model;
-    private View view;
+private:
+    Model model;
+    View view;
 
-    public Presenter() {
-        this.model = new Model();
-        this.view = new View();
-    }
+public:
+    Presenter() : model(), view() {}
 
-    public void setData(String data) {
-        System.out.println("Presenter: Receive data from client.");
+    void setData(const std::string& data) {
+        std::cout << "Presenter: Receive data from client." << std::endl;
         model.setData(data);
     }
 
-    public void updateView() {
-        System.out.println("Presenter: Receive update view from client.");
-        String data = model.getData();
+    void updateView() {
+        std::cout << "Presenter: Receive update view from client." << std::endl;
+        const std::string& data = model.getData();
         view.update(data);
     }
-}
+};
 
-public class MVPPattern {
-    public static void main(String[] args) {
-        System.out.println("Client: Pass trigger to Presenter.");
-        Presenter presenter = new Presenter();
-        presenter.updateView();
+int main() {
+    std::cout << "Client: Pass trigger to Presenter." << std::endl;
+    Presenter presenter;
+    presenter.updateView();
 
-        presenter.setData("Hello, Students!");
-        presenter.updateView();
-    }
+    presenter.setData("Hello, Students!");
+    presenter.updateView();
+
+    return 0;
 }
 
 /*

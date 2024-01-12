@@ -1,44 +1,60 @@
-interface Strategy {
-    void execute(int data);
-}
+#include <iostream>
 
-class ConcreteStrategy1 implements Strategy {
-    @Override
-    public void execute(int data) {
-        System.out.println("ConcreteStrategy1 execute");
+// Abstract Strategy class
+class Strategy {
+public:
+    virtual void execute(int data) = 0;
+    virtual ~Strategy() {}
+};
+
+// ConcreteStrategy1 class
+class ConcreteStrategy1 : public Strategy {
+public:
+    void execute(int data) override {
+        std::cout << "ConcreteStrategy1 execute" << std::endl;
     }
-}
+};
 
-class ConcreteStrategy2 implements Strategy {
-    @Override
-    public void execute(int data) {
-        System.out.println("ConcreteStrategy2 execute");
+// ConcreteStrategy2 class
+class ConcreteStrategy2 : public Strategy {
+public:
+    void execute(int data) override {
+        std::cout << "ConcreteStrategy2 execute" << std::endl;
     }
-}
+};
 
+// Context class
 class Context {
-    private Strategy strategy;
+private:
+    Strategy* strategy;
 
-    Context(Strategy strategy) {
-        this.strategy = strategy;
-    }
+public:
+    Context(Strategy* strategy) : strategy(strategy) {}
 
-    void setStrategy(Strategy strategy) {
-        this.strategy = strategy;
+    void setStrategy(Strategy* strategy) {
+        this->strategy = strategy;
     }
 
     void execute() {
         int data = 1;
-        this.strategy.execute(data);
+        this->strategy->execute(data);
     }
+};
+
+int main() {
+    // Example usage
+    ConcreteStrategy1 strategy1;
+    Context context1(&strategy1);
+    context1.execute();
+
+    ConcreteStrategy2 strategy2;
+    Context context2(&strategy2);
+    context2.execute();
+
+    return 0;
 }
 
-public class StrategyPattern {
-    public static void main(String[] args) {
-        Context context = new Context(new ConcreteStrategy1());
-        context.execute();
-
-        context.setStrategy(new ConcreteStrategy2());
-        context.execute();
-    }
-}
+/*
+ConcreteStrategy1 execute
+ConcreteStrategy2 execute
+*/

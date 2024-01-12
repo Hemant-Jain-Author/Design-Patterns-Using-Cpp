@@ -1,78 +1,88 @@
-// Abstraction
-abstract class Shape {
-    protected DrawingAPI implementation;
-
-    public Shape(DrawingAPI implementation) {
-        this.implementation = implementation;
-    }
-
-    public abstract void draw();
-}
-
-// Concrete Abstraction
-class Square extends Shape {
-    public Square(DrawingAPI implementation) {
-        super(implementation);
-    }
-
-    @Override
-    public void draw() {
-        implementation.drawSquare();
-    }
-}
-
-class Circle extends Shape {
-    public Circle(DrawingAPI implementation) {
-        super(implementation);
-    }
-
-    @Override
-    public void draw() {
-        implementation.drawCircle();
-    }
-}
+#include <iostream>
 
 // Implementation
-interface DrawingAPI {
-    void drawSquare();
-    void drawCircle();
-}
+class DrawingAPI {
+public:
+    virtual void drawSquare() = 0;
+    virtual void drawCircle() = 0;
+    virtual ~DrawingAPI() {} // Virtual destructor for proper cleanup
+};
 
 // Concrete Implementation
-class WindowsAPI implements DrawingAPI {
-    @Override
-    public void drawSquare() {
-        System.out.println("Drawing a square on Windows.");
+class WindowsAPI : public DrawingAPI {
+public:
+    void drawSquare() override {
+        std::cout << "Drawing a square on Windows." << std::endl;
     }
 
-    @Override
-    public void drawCircle() {
-        System.out.println("Drawing a circle on Windows.");
+    void drawCircle() override {
+        std::cout << "Drawing a circle on Windows." << std::endl;
     }
-}
+};
 
-class MacAPI implements DrawingAPI {
-    @Override
-    public void drawSquare() {
-        System.out.println("Drawing a square on Mac.");
+class MacAPI : public DrawingAPI {
+public:
+    void drawSquare() override {
+        std::cout << "Drawing a square on Mac." << std::endl;
     }
 
-    @Override
-    public void drawCircle() {
-        System.out.println("Drawing a circle on Mac.");
+    void drawCircle() override {
+        std::cout << "Drawing a circle on Mac." << std::endl;
     }
-}
+};
+
+// Abstraction
+class Shape {
+protected:
+    DrawingAPI* implementation;
+
+public:
+    Shape(DrawingAPI* implementation) : implementation(implementation) {}
+
+    virtual void draw() = 0;
+    virtual ~Shape() {} // Virtual destructor for proper cleanup
+};
+
+// Concrete Abstraction
+class Square : public Shape {
+public:
+    Square(DrawingAPI* implementation) : Shape(implementation) {}
+
+    void draw() override {
+        implementation->drawSquare();
+    }
+};
+
+class Circle : public Shape {
+public:
+    Circle(DrawingAPI* implementation) : Shape(implementation) {}
+
+    void draw() override {
+        implementation->drawCircle();
+    }
+};
 
 // Usage
-public class BridgePatternShape2 {
-    public static void main(String[] args) {
-        DrawingAPI windowsAPI = new WindowsAPI();
-        DrawingAPI macAPI = new MacAPI();
+int main() {
+    DrawingAPI* windowsAPI = new WindowsAPI();
+    DrawingAPI* macAPI = new MacAPI();
 
-        Shape square = new Square(windowsAPI);
-        square.draw();  // Output: Drawing a square on Windows.
+    Shape* square = new Square(windowsAPI);
+    square->draw(); // Output: Drawing a square on Windows.
 
-        Shape circle = new Circle(macAPI);
-        circle.draw();  // Output: Drawing a circle on Mac.
-    }
+    Shape* circle = new Circle(macAPI);
+    circle->draw(); // Output: Drawing a circle on Mac.
+
+    // Clean up memory
+    delete windowsAPI;
+    delete macAPI;
+    delete square;
+    delete circle;
+
+    return 0;
 }
+
+/*
+Drawing a square on Windows.
+Drawing a circle on Mac.
+*/

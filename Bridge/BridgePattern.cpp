@@ -1,48 +1,62 @@
-// Abstraction interface
-interface Abstraction {
-    void operation();
-}
+#include <iostream>
 
 // Implementor interface
-interface Implementor {
-    void operation();
-}
+class Implementor {
+public:
+    virtual void operation() = 0;
+    virtual ~Implementor() {} // Virtual destructor for proper cleanup
+};
 
 // ConcreteImplementor1 class
-class ConcreteImplementor1 implements Implementor {
-    @Override
-    public void operation() {
-        System.out.println("ConcreteImplementor1 operation");
+class ConcreteImplementor1 : public Implementor {
+public:
+    void operation() override {
+        std::cout << "ConcreteImplementor1 operation" << std::endl;
     }
-}
+};
 
 // ConcreteImplementor2 class
-class ConcreteImplementor2 implements Implementor {
-    @Override
-    public void operation() {
-        System.out.println("ConcreteImplementor2 operation");
+class ConcreteImplementor2 : public Implementor {
+public:
+    void operation() override {
+        std::cout << "ConcreteImplementor2 operation" << std::endl;
     }
-}
+};
+
+// Abstraction interface
+class Abstraction {
+protected:
+    Implementor* imp;
+
+public:
+    Abstraction(Implementor* imp) : imp(imp) {}
+
+    virtual void operation() = 0;
+    virtual ~Abstraction() {} // Virtual destructor for proper cleanup
+};
 
 // ConcreteAbstraction class
-class ConcreteAbstraction implements Abstraction {
-    private Implementor imp;
+class ConcreteAbstraction : public Abstraction {
+public:
+    ConcreteAbstraction(Implementor* imp) : Abstraction(imp) {}
 
-    public ConcreteAbstraction(Implementor imp) {
-        this.imp = imp;
+    void operation() override {
+        imp->operation();
     }
-
-    @Override
-    public void operation() {
-        imp.operation();
-    }
-}
+};
 
 // Client code
-public class BridgePattern {
-    public static void main(String[] args) {
-        Implementor c1 = new ConcreteImplementor1();
-        Abstraction abstraction = new ConcreteAbstraction(c1);
-        abstraction.operation();
-    }
+int main() {
+    Implementor* c1 = new ConcreteImplementor1();
+    Abstraction* abstraction = new ConcreteAbstraction(c1);
+    abstraction->operation();
+
+    // Clean up memory
+    delete c1;
+    delete abstraction;
+
+    return 0;
 }
+/*
+ConcreteImplementor1 operation
+*/

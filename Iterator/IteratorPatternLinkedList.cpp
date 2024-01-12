@@ -1,81 +1,82 @@
-import java.util.Iterator;
+#include <iostream>
+#include <iterator>
 
-class LinkedList implements Iterable<Integer> {
-    // Node class representing elements of linked list.
+class LinkedList {
+private:
     class Node {
+    public:
         int value;
-        Node next;
+        Node* next;
 
-        public Node(int v, Node n) {
-            value = v;
-            next = n;
-        }
-    }
+        Node(int v, Node* n) : value(v), next(n) {}
+    };
 
-    Node head;
-    Node tail;
+    Node* head;
+    Node* tail;
     int size;
 
-    // Constructor of linked list.
-    public LinkedList() {
-        head = null;
-        tail = null;
-        size = 0;
-    }
+public:
+    LinkedList() : head(nullptr), tail(nullptr), size(0) {}
 
-    public void addHead(int value) {
-        Node newNode = new Node(value, head);
-        if (head == null) {
+    void addHead(int value) {
+        Node* newNode = new Node(value, head);
+        if (head == nullptr) {
             tail = newNode;
         }
         head = newNode;
         size++;
     }
 
-    @Override
-    public Iterator<Integer> iterator() {
-        return new LinkedListIterator(this);
+    class LinkedListIterator : public std::iterator<std::input_iterator_tag, int> {
+    private:
+        LinkedList* aggregate;
+        Node* current;
+
+    public:
+        LinkedListIterator(LinkedList* aggregate, Node* current) : aggregate(aggregate), current(current) {}
+
+        bool operator!=(const LinkedListIterator& other) const {
+            return current != other.current && current != nullptr;
+        }
+
+        int operator*() const {
+            return current->value;
+        }
+
+        LinkedListIterator& operator++() {
+            if (current != nullptr) {
+                current = current->next;
+            }
+            return *this;
+        }
+    };
+
+    LinkedListIterator begin() {
+        return LinkedListIterator(this, head);
     }
 
-    public int getSize() {
+    LinkedListIterator end() {
+        return LinkedListIterator(this, nullptr);
+    }
+
+    int getSize() const {
         return size;
     }
-}
+};
 
-class LinkedListIterator implements Iterator<Integer> {
+int main() {
     LinkedList aggregate;
-    LinkedList.Node current;
-
-    public LinkedListIterator(LinkedList aggregate) {
-        this.aggregate = aggregate;
-        this.current = aggregate.head;
+    for (int i = 0; i < 5; i++) {
+        aggregate.addHead(i);
     }
 
-    @Override
-    public boolean hasNext() {
-        return current != null;
+    for (int val : aggregate) {
+        std::cout << val << " ";
     }
 
-    @Override
-    public Integer next() {
-        if (!hasNext()) {
-            throw new java.util.NoSuchElementException();
-        }
-        int value = current.value;
-        current = current.next;
-        return value;
-    }
+    return 0;
 }
 
-class IteratorPatternLinkedList {
-    public static void main(String[] args) {
-        LinkedList aggregate = new LinkedList();
-        for (int i = 0; i < 5; i++) {
-            aggregate.addHead(i);
-        }
-
-        for (int val : aggregate) {
-            System.out.print(val + " ");
-        }
-    }
-}
+/*
+4 3 2 1 0 
+*/

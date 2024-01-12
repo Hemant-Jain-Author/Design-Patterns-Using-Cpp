@@ -1,84 +1,98 @@
-import java.util.ArrayList;
-import java.util.List;
+#include <iostream>
+#include <vector>
+#include <algorithm>
 
-abstract class Subject {
-    private List<Observer> observers = new ArrayList<>();
+class Subject;
 
-    public void attach(Observer observer) {
-        observer.setSubject(this);
-        observers.add(observer);
+class Observer {
+public:
+    virtual void update(const std::string& newState) = 0;
+    virtual void setSubject(Subject* subject) = 0;
+};
+
+class Subject {
+private:
+    std::vector<Observer*> observers;
+
+public:
+    void attach(Observer* observer) {
+        observer->setSubject(this);
+        observers.push_back(observer);
     }
 
-    public void detach(Observer observer) {
-        observer.setSubject(null);
-        observers.remove(observer);
+    void detach(Observer* observer) {
+        observer->setSubject(nullptr);
+        auto it = std::find(observers.begin(), observers.end(), observer);
+        observers.erase(it);
     }
 
-    public void notifyObservers() {
-        for (Observer observer : observers) {
-            observer.update();
+    void notifyObservers(const std::string& newState) {
+        for (Observer* observer : observers) {
+            observer->update(newState);
         }
     }
-}
+};
 
-class ConcreteSubject extends Subject {
-    private String state;
+class ConcreteSubject : public Subject {
+private:
+    std::string state;
 
-    public String getState() {
+public:
+    const std::string& getState() const {
         return state;
     }
 
-    public void setState(String state) {
-        this.state = state;
-        notifyObservers();
+    void setState(const std::string& newState) {
+        state = newState;
+        notifyObservers(newState);
     }
-}
+};
 
-abstract class Observer {
-    protected Subject subject;
+class ConcreteObserver1 : public Observer {
+private:
+    Subject* subject;
 
-    public void setSubject(Subject subject) {
-        this.subject = subject;
-    }
-
-    public abstract void update();
-}
-
-class ConcreteObserver1 extends Observer {
-    public ConcreteObserver1(Subject subject) {
-        setSubject(subject);
-        subject.attach(this);
+public:
+    ConcreteObserver1(Subject* subject) : subject(subject) {
+        subject->attach(this);
     }
 
-    @Override
-    public void update() {
-        System.out.println(subject instanceof ConcreteSubject ?
-                ((ConcreteSubject) subject).getState() + " notified to Observer1" : "");
-    }
-}
-
-class ConcreteObserver2 extends Observer {
-    public ConcreteObserver2(Subject subject) {
-        setSubject(subject);
-        subject.attach(this);
+    void update(const std::string& newState) override {
+        std::cout << newState << " notified to Observer1" << std::endl;
     }
 
-    @Override
-    public void update() {
-        System.out.println(subject instanceof ConcreteSubject ?
-                ((ConcreteSubject) subject).getState() + " notified to Observer2" : "");
+    void setSubject(Subject* newSubject) override {
+        subject = newSubject;
     }
-}
+};
 
-public class ObserverPattern {
-    public static void main(String[] args) {
-        ConcreteSubject subject = new ConcreteSubject();
-        ConcreteObserver1 observer1 = new ConcreteObserver1(subject);
-        ConcreteObserver2 observer2 = new ConcreteObserver2(subject);
+class ConcreteObserver2 : public Observer {
+private:
+    Subject* subject;
 
-        subject.setState("First state");
-        subject.setState("Second state");
+public:
+    ConcreteObserver2(Subject* subject) : subject(subject) {
+        subject->attach(this);
     }
+
+    void update(const std::string& newState) override {
+        std::cout << newState << " notified to Observer2" << std::endl;
+    }
+
+    void setSubject(Subject* newSubject) override {
+        subject = newSubject;
+    }
+};
+
+int main() {
+    ConcreteSubject subject;
+    ConcreteObserver1 observer1(&subject);
+    ConcreteObserver2 observer2(&subject);
+
+    subject.setState("First state");
+    subject.setState("Second state");
+
+    return 0;
 }
 
 /*

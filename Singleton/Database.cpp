@@ -1,78 +1,101 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+#include <iostream>
+#include <sqlite3.h>
 
-public class Database {
-    private static Database _instance = null; // Keep instance reference
-    private Connection connection;
-    
-    private Database() {
+class Database {
+private:
+    static Database* _instance; // Keep instance reference
+    sqlite3* connection;
+
+    Database() {
         try {
-            System.out.println("Database created");
-            connection = DriverManager.getConnection("jdbc:sqlite:db.sqlite3");
-        } catch (SQLException e) {
-            e.printStackTrace();
+            std::cout << "Database created" << std::endl;
+            sqlite3_open("db.sqlite3", &connection);
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
         }
     }
 
-    public static Database getInstance() {
-        if (_instance == null) {
+public:
+    static Database* getInstance() {
+        if (_instance == nullptr) {
             _instance = new Database();
         }
         return _instance;
     }
 
-    public void createTable() {
+    void createTable() {
         try {
-            PreparedStatement statement = connection.prepareStatement(
-                "CREATE TABLE IF NOT EXISTS students (id INTEGER, name TEXT);"
+            sqlite3_exec(
+                connection,
+                "CREATE TABLE IF NOT EXISTS students (id INTEGER, name TEXT);",
+                nullptr,
+                nullptr,
+                nullptr
             );
-            statement.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
         }
     }
 
-    public void addData(int id, String name) {
+    void addData(int id, const std::string& name) {
         try {
-            PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO students (id, name) VALUES (?, ?);"
+            sqlite3_stmt* statement;
+            sqlite3_prepare_v2(
+                connection,
+                "INSERT INTO students (id, name) VALUES (?, ?);",
+                -1,
+                &statement,
+                nullptr
             );
-            statement.setInt(1, id);
-            statement.setString(2, name);
-            statement.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            sqlite3_bind_int(statement, 1, id);
+            sqlite3_bind_text(statement, 2, name.c_str(), -1, SQLITE_STATIC);
+            sqlite3_step(statement);
+            sqlite3_finalize(statement);
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
         }
     }
 
-    public void display() {
+    void display() {
         try {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM students;");
-            ResultSet resultSet = statement.executeQuery();
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("name");
-                System.out.println("ID: " + id + ", Name: " + name);
+            sqlite3_stmt* statement;
+            sqlite3_prepare_v2(
+                connection,
+                "SELECT * FROM students;",
+                -1,
+                &statement,
+                nullptr
+            );
+            while (sqlite3_step(statement) == SQLITE_ROW) {
+                int id = sqlite3_column_int(statement, 0);
+                const char* name = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
+                std::cout << "ID: " << id << ", Name: " << name << std::endl;
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            sqlite3_finalize(statement);
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
         }
     }
 
-    public static void main(String[] args) {
-        Database db1 = Database.getInstance();
-        Database db2 = Database.getInstance();
-
-        System.out.println("Database Objects DB1: " + db1);
-        System.out.println("Database Objects DB2: " + db2);
-
-        db1.createTable();
-        db1.addData(1, "john");
-        db2.addData(2, "smith");
-
-        db1.display();
+    ~Database() {
+        sqlite3_close(connection);
     }
+};
+
+Database* Database::_instance = nullptr;
+
+int main() {
+    Database* db1 = Database::getInstance();
+    Database* db2 = Database::getInstance();
+
+    std::cout << "Database Objects DB1: " << db1 << std::endl;
+    std::cout << "Database Objects DB2: " << db2 << std::endl;
+
+    db1->createTable();
+    db1->addData(1, "john");
+    db2->addData(2, "smith");
+
+    db1->display();
+
+    return 0;
 }

@@ -1,76 +1,78 @@
+#include <iostream>
+#include <string>
+
 // Model class
 class Model {
-    private String data;
+private:
+    std::string data;
 
-    public Model() {
-        this.data = "Hello, World!";
+public:
+    Model() : data("Hello, World!") {}
+
+    void setData(const std::string& data) {
+        std::cout << "Model: Set data: " << data << std::endl;
+        this->data = data;
     }
 
-    public void setData(String data) {
-        System.out.println("Model: Set data : " + data);
-        this.data = data;
-    }
-
-    public String getData() {
-        System.out.println("Model: Get data: " + data);
+    const std::string& getData() const {
+        std::cout << "Model: Get data: " << data << std::endl;
         return data;
     }
-}
+};
 
 // View class
 class View {
-    private Model model;
+private:
+    const Model& model;
 
-    public View(Model model) {
-        this.model = model;
-    }
+public:
+    View(const Model& model) : model(model) {}
 
     // In classic MVC, the view interacts with the model to get data.
-    public void update() {
-        String data = model.getData();
-        System.out.println("View: Updating the view with data : " + data);
+    void update() const {
+        std::string data = model.getData();
+        std::cout << "View: Updating the view with data: " << data << std::endl;
     }
-}
+};
 
 // Controller class
 class Controller {
-    private Model model;
-    private View view;
+private:
+    Model model;
+    View view;
 
-    public Controller() {
-        this.model = new Model();
-        this.view = new View(model);
-    }
+public:
+    Controller() : view(model) {}
 
-    public void setData(String data) {
-        System.out.println("Controller: Receive data from client.");
+    void setData(const std::string& data) {
+        std::cout << "Controller: Receive data from client." << std::endl;
         model.setData(data);
     }
 
-    public void updateView() {
-        System.out.println("Controller: Receive update view from client.");
+    void updateView() const {
+        std::cout << "Controller: Receive update view from client." << std::endl;
         view.update();
     }
-}
+};
 
-// Main class (Client code)
-public class MVCPattern {
-    public static void main(String[] args) {
-        Controller controller = new Controller();
-        controller.updateView();
+// Main function (Client code)
+int main() {
+    Controller controller;
+    controller.updateView();
 
-        controller.setData("Hello, Students!");
-        controller.updateView();
-    }
+    controller.setData("Hello, Students!");
+    controller.updateView();
+
+    return 0;
 }
 
 /*
 Controller: Receive update view from client.
 Model: Get data: Hello, World!
-View: Updating the view with data : Hello, World!
+View: Updating the view with data: Hello, World!
 Controller: Receive data from client.
-Model: Set data : Hello, Students!
+Model: Set data: Hello, Students!
 Controller: Receive update view from client.
 Model: Get data: Hello, Students!
-View: Updating the view with data : Hello, Students!
+View: Updating the view with data: Hello, Students!
 */

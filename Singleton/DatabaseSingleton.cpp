@@ -1,73 +1,55 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+#include <iostream>
+#include "sqlite_modern_cpp.h"
 
-public class DatabaseSingleton {
-    private static DatabaseSingleton instance;
-    private Connection connection;
-    private PreparedStatement preparedStatement;
+class DatabaseSingleton {
+private:
+    static DatabaseSingleton* instance;
+    sqlite::database db;
 
-    private DatabaseSingleton() {
-        try {
-            System.out.println("Database created");
-            this.connection = DriverManager.getConnection("jdbc:sqlite:db.sqlite3");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    DatabaseSingleton() : db("db.sqlite3") {
+        std::cout << "Database created" << std::endl;
     }
 
-    public static DatabaseSingleton getInstance() {
-        if (instance == null) {
+public:
+    static DatabaseSingleton* getInstance() {
+        if (!instance) {
             instance = new DatabaseSingleton();
         }
         return instance;
     }
 
-    public void createTable() {
-        try {
-            this.preparedStatement = connection.prepareStatement("CREATE TABLE IF NOT EXISTS students (id INTEGER, name TEXT);");
-            this.preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    void createTable() {
+        db << "CREATE TABLE IF NOT EXISTS students (id INTEGER, name TEXT);";
+    }
+
+    void addData(int id, const std::string& name) {
+        db << "INSERT INTO students (id, name) VALUES (?, ?);" << id << name;
+    }
+
+    void display() {
+        auto result = db << "SELECT * FROM students;";
+        for (auto& row : result) {
+            std::cout << row["id"] << " " << row["name"] << std::endl;
         }
     }
+};
 
-    public void addData(int id, String name) {
-        try {
-            String query = "INSERT INTO students (id, name) VALUES (?, ?);";
-            this.preparedStatement = connection.prepareStatement(query);
-            this.preparedStatement.setInt(1, id);
-            this.preparedStatement.setString(2, name);
-            this.preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+DatabaseSingleton* DatabaseSingleton::instance = nullptr;
 
-    public void display() {
-        try {
-            this.preparedStatement = connection.prepareStatement("SELECT * FROM students;");
-            ResultSet resultSet = this.preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                System.out.println(resultSet.getInt("id") + " " + resultSet.getString("name"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+int main() {
+    DatabaseSingleton* db1 = DatabaseSingleton::getInstance();
+    DatabaseSingleton* db2 = DatabaseSingleton::getInstance();
 
-    public static void main(String[] args) {
-        DatabaseSingleton db1 = DatabaseSingleton.getInstance();
-        DatabaseSingleton db2 = DatabaseSingleton.getInstance();
-        System.out.println("Database Objects DB1: " + db1);
-        System.out.println("Database Objects DB2: " + db2);
+    std::cout << "Database Objects DB1: " << db1 << std::endl;
+    std::cout << "Database Objects DB2: " << db2 << std::endl;
 
-        db1.createTable();
-        db1.addData(1, "john");
-        db2.addData(2, "smith");
+    db1->createTable();
+    db1->addData(1, "john");
+    db2->addData(2, "smith");
 
-        db1.display();
-    }
+    db1->display();
+
+    delete db1;  // Clean up allocated instance
+
+    return 0;
 }

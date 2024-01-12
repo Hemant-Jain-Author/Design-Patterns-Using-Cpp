@@ -1,86 +1,103 @@
+#include <iostream>
+
 // Menu interface
-interface Menu {
-    void desc();
-}
+class Menu {
+public:
+    virtual void desc() = 0;
+    virtual ~Menu() {} // Virtual destructor for proper cleanup
+};
 
 // WinMenu class
-class WinMenu implements Menu {
-    @Override
-    public void desc() {
-        System.out.println("Win Menu!!");
+class WinMenu : public Menu {
+public:
+    void desc() override {
+        std::cout << "Win Menu!!" << std::endl;
     }
-}
+};
 
 // MacMenu class
-class MacMenu implements Menu {
-    @Override
-    public void desc() {
-        System.out.println("Mac Menu!!");
+class MacMenu : public Menu {
+public:
+    void desc() override {
+        std::cout << "Mac Menu!!" << std::endl;
     }
-}
+};
 
 // Button interface
-interface Button {
-    void desc();
-}
+class Button {
+public:
+    virtual void desc() = 0;
+    virtual ~Button() {} // Virtual destructor for proper cleanup
+};
 
 // WinButton class
-class WinButton implements Button {
-    @Override
-    public void desc() {
-        System.out.println("Win Button!!");
+class WinButton : public Button {
+public:
+    void desc() override {
+        std::cout << "Win Button!!" << std::endl;
     }
-}
+};
 
 // MacButton class
-class MacButton implements Button {
-    @Override
-    public void desc() {
-        System.out.println("Mac Button!!");
+class MacButton : public Button {
+public:
+    void desc() override {
+        std::cout << "Mac Button!!" << std::endl;
     }
-}
+};
 
 // Abstract Factory interface
-interface AbstractFactory {
-    Menu getMenu();
-    Button getButton();
-}
+class AbstractFactory {
+public:
+    virtual Menu* getMenu() = 0;
+    virtual Button* getButton() = 0;
+    virtual ~AbstractFactory() {} // Virtual destructor for proper cleanup
+};
 
 // WinFactory class
-class WinFactory implements AbstractFactory {
-    @Override
-    public Menu getMenu() {
+class WinFactory : public AbstractFactory {
+public:
+    Menu* getMenu() override {
         return new WinMenu();
     }
 
-    @Override
-    public Button getButton() {
+    Button* getButton() override {
         return new WinButton();
     }
-}
+};
 
 // MacFactory class
-class MacFactory implements AbstractFactory {
-    @Override
-    public Menu getMenu() {
+class MacFactory : public AbstractFactory {
+public:
+    Menu* getMenu() override {
         return new MacMenu();
     }
 
-    @Override
-    public Button getButton() {
+    Button* getButton() override {
         return new MacButton();
     }
-}
+};
 
 // Client code
-public class AbstractFactoryDemo {
-    public static void main(String[] args) {
-        AbstractFactory macFactory = new MacFactory();
-        macFactory.getMenu().desc();
-        macFactory.getButton().desc();
+int main() {
+    AbstractFactory* macFactory = new MacFactory();
+    macFactory->getMenu()->desc();
+    macFactory->getButton()->desc();
 
-        AbstractFactory winFactory = new WinFactory();
-        winFactory.getButton().desc();
-        winFactory.getMenu().desc();
-    }
+    AbstractFactory* winFactory = new WinFactory();
+    winFactory->getButton()->desc();
+    winFactory->getMenu()->desc();
+
+    // Clean up memory
+    delete macFactory;
+    delete winFactory;
+
+    return 0;
 }
+
+/*
+Mac Menu!!
+Mac Button!!
+Win Button!!
+Win Menu!!
+*/

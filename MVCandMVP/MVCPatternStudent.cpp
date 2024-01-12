@@ -1,73 +1,73 @@
+#include <iostream>
+#include <string>
+
 class Student {
-    String name;
+public:
+    std::string name;
     int id;
 
-    public Student(String name, int id) {
-        this.name = name;
-        this.id = id;
-    }
-}
+    Student(const std::string& name, int id) : name(name), id(id) {}
+};
 
 class Model {
-    private Student student;
+private:
+    Student student;
 
-    public Model() {
-        this.student = new Student("Harry", 1);
-    }
+public:
+    Model() : student("Harry", 1) {}
 
-    public void setData(String name, int id) {
-        System.out.println("Model: Set data : " + name + " " + id);
+    void setData(const std::string& name, int id) {
+        std::cout << "Model: Set data : " << name << " " << id << std::endl;
         student.name = name;
         student.id = id;
     }
 
-    public Student getData() {
-        System.out.println("Model: Get data.");
+    const Student& getData() const {
+        std::cout << "Model: Get data." << std::endl;
         return student;
     }
-}
+};
 
 class View {
-    private Model model;
+private:
+    const Model& model;
 
-    public View(Model model) {
-        this.model = model;
-    }
+public:
+    View(const Model& model) : model(model) {}
 
-    public void update() {
-        Student student = model.getData();
-        System.out.println("View: Student Info, Name: " + student.name + " Id: " + student.id);
+    void update() const {
+        const Student& student = model.getData();
+        std::cout << "View: Student Info, Name: " << student.name << " Id: " << student.id << std::endl;
     }
-}
+};
 
 class Controller {
-    private Model model;
-    private View view;
+private:
+    Model model;
+    View view;
 
-    public Controller() {
-        this.model = new Model();
-        this.view = new View(model);
-    }
+public:
+    Controller() : view(model) {}
 
-    public void setData(String name, int id) {
-        System.out.println("Controller: Receive data from client.");
+    void setData(const std::string& name, int id) {
+        std::cout << "Controller: Receive data from client." << std::endl;
         model.setData(name, id);
     }
 
-    public void updateView() {
-        System.out.println("Controller: Receive update view from client.");
+    void updateView() const {
+        std::cout << "Controller: Receive update view from client." << std::endl;
         view.update();
     }
-}
+};
 
-public class MVCPatternStudent {
-    public static void main(String[] args) {
-        Controller controller = new Controller();
-        controller.updateView();
+int main() {
+    Controller controller;
+    controller.updateView();
 
-        controller.setData("Jack", 2);
-        controller.updateView();
-    }
+    controller.setData("Jack", 2);
+    controller.updateView();
+
+    return 0;
 }
 
 /*

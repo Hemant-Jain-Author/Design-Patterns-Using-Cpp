@@ -1,30 +1,39 @@
-interface Subject {
-    void request();
-}
+#include <iostream>
 
-class RealSubject implements Subject {
-    @Override
-    public void request() {
-        System.out.println("Concrete Subject Request Method");
+class Subject {
+public:
+    virtual void request() = 0;
+};
+
+class RealSubject : public Subject {
+public:
+    void request() override {
+        std::cout << "Concrete Subject Request Method" << std::endl;
     }
-}
+};
 
-class Proxy implements Subject {
-    private RealSubject realSubject;
+class Proxy : public Subject {
+private:
+    RealSubject realSubject;
 
-    public Proxy() {
-        this.realSubject = new RealSubject();
+public:
+    Proxy() {
+        // In this simplified example, the RealSubject is created inside the Proxy.
+        // In a real-world scenario, you might use lazy initialization or other mechanisms.
     }
 
-    @Override
-    public void request() {
+    void request() override {
         realSubject.request();
     }
+};
+
+int main() {
+    Proxy proxy;
+    proxy.request();
+
+    return 0;
 }
 
-public class ProxyTest {
-    public static void main(String[] args) {
-        Proxy proxy = new Proxy();
-        proxy.request();
-    }
-}
+/*
+Concrete Subject Request Method
+*/

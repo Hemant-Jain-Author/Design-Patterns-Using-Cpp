@@ -1,78 +1,85 @@
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 class Barrier {
-    private int count;
-    private final Lock barrierLock = new ReentrantLock();
-    private final Condition barrierCondition = barrierLock.newCondition();
+private:
+    int count;
+    std::mutex barrierMutex;
+    std::condition_variable barrierCondition;
 
-    public Barrier(int count) {
-        this.count = count;
-    }
+public:
+    Barrier(int count) : count(count) {}
 
-    public void waitBarrier() throws InterruptedException {
-        barrierLock.lock();
-        try {
-            count--;
-            if (count > 0) {
-                barrierCondition.await();
-            } else {
-                barrierCondition.signalAll();
-            }
-        } finally {
-            barrierLock.unlock();
+    void waitBarrier() {
+        std::unique_lock<std::mutex> lock(barrierMutex);
+        count--;
+
+        if (count > 0) {
+            barrierCondition.wait(lock);
+        } else {
+            barrierCondition.notify_all();
         }
     }
-}
+};
 
-class Worker implements Runnable {
-    private final Barrier barrier;
-    private final int id;
+class Worker {
+private:
+    Barrier& barrier;
+    int id;
 
-    public Worker(Barrier barrier, int id) {
-        this.barrier = barrier;
-        this.id = id;
-    }
+public:
+    Worker(Barrier& barrier, int id) : barrier(barrier), id(id) {}
 
-    @Override
-    public void run() {
-        System.out.println("Worker " + id + " started");
+    void operator()() {
+        std::cout << "Worker " << id << " started" << std::endl;
         // Simulating some work
         for (int i = 0; i < 3; i++) {
-            System.out.println("Worker " + id + " working...");
+            std::cout << "Worker " << id << " working..." << std::endl;
             // Simulating some computation
         }
-        System.out.println("Worker " + id + " finished");
+        std::cout << "Worker " << id << " finished" << std::endl;
 
-        try {
-            barrier.waitBarrier();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        barrier.waitBarrier();
     }
+};
+
+int main() {
+    int numWorkers = 3;
+    Barrier barrier(numWorkers);
+
+    std::thread threads[numWorkers];
+
+    for (int i = 0; i < numWorkers; i++) {
+        Worker worker(barrier, i);
+        threads[i] = std::thread(worker);
+    }
+
+    for (auto& t : threads) {
+        t.join();
+    }
+
+    std::cout << "All workers finished. Proceeding to the next step." << std::endl;
+
+    return 0;
 }
 
-class BarrierPattern {
-    public static void main(String[] args) {
-        int numWorkers = 3;
-        Barrier barrier = new Barrier(numWorkers);
+/*
+Worker Worker 01 started startedWorker 
 
-        Thread[] threads = new Thread[numWorkers];
-        for (int i = 0; i < numWorkers; i++) {
-            Worker worker = new Worker(barrier, i);
-            threads[i] = new Thread(worker);
-            threads[i].start();
-        }
-
-        try {
-            for (Thread t : threads) {
-                t.join();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("All workers finished. Proceeding to the next step.");
-    }
-}
+2 started
+Worker 2 working...
+Worker 2 working...
+Worker 2 working...
+Worker 2 finished
+Worker 1 working...
+Worker 1 working...
+Worker 1 working...
+Worker 1 finished
+Worker 0 working...
+Worker 0 working...
+Worker 0 working...
+Worker 0 finished
+All workers finished. Proceeding to the next step.
+*/

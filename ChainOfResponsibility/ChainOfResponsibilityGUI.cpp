@@ -1,83 +1,79 @@
-abstract class Handler {
-    protected Handler parent;
-    protected String helpText;
+#include <iostream>
+#include <string>
 
-    public Handler(Handler parent) {
-        this.parent = parent;
-        this.helpText = null;
+class Handler {
+protected:
+    Handler* parent;
+    std::string helpText;
+
+public:
+    Handler(Handler* parent) : parent(parent), helpText("") {}
+
+    virtual void showHelperText() = 0;
+
+    void setHelperText(const std::string& text) {
+        helpText = text;
     }
+};
 
-    public abstract void showHelperText();
+class Container : public Handler {
+public:
+    Container(Handler* parent) : Handler(parent) {}
 
-    public void setHelperText(String text) {
-        this.helpText = text;
-    }
-}
-
-class Container extends Handler {
-    public Container(Handler parent) {
-        super(parent);
-    }
-
-    @Override
-    public void showHelperText() {
-        if (helpText != null) {
-            System.out.println("Help :: " + helpText);
-        } else if (parent != null) {
-            System.out.println("Message passed to next in chain by Container");
-            parent.showHelperText();
+    void showHelperText() override {
+        if (!helpText.empty()) {
+            std::cout << "Help :: " << helpText << std::endl;
+        } else if (parent != nullptr) {
+            std::cout << "Message passed to next in chain by Container" << std::endl;
+            parent->showHelperText();
         }
     }
-}
+};
 
-class Button extends Handler {
-    private String label;
+class Button : public Handler {
+private:
+    std::string label;
 
-    public Button(String label, Handler parent) {
-        super(parent);
-        this.label = label;
-    }
+public:
+    Button(const std::string& label, Handler* parent) : Handler(parent), label(label) {}
 
-    @Override
-    public void showHelperText() {
-        if (helpText != null) {
-            System.out.println("Help :: " + helpText);
-        } else if (parent != null) {
-            System.out.println("Message passed to next in chain by Button");
-            parent.showHelperText();
+    void showHelperText() override {
+        if (!helpText.empty()) {
+            std::cout << "Help :: " << helpText << std::endl;
+        } else if (parent != nullptr) {
+            std::cout << "Message passed to next in chain by Button" << std::endl;
+            parent->showHelperText();
         }
     }
-}
+};
 
-class Panel extends Handler {
-    public Panel() {
-        super(null);
-    }
+class Panel : public Handler {
+public:
+    Panel() : Handler(nullptr) {}
 
-    @Override
-    public void showHelperText() {
-        if (helpText != null) {
-            System.out.println("Help :: " + helpText);
-        } else if (parent != null) {
-            System.out.println("Message passed to next in chain by Panel");
-            parent.showHelperText();
+    void showHelperText() override {
+        if (!helpText.empty()) {
+            std::cout << "Help :: " << helpText << std::endl;
+        } else if (parent != nullptr) {
+            std::cout << "Message passed to next in chain by Panel" << std::endl;
+            parent->showHelperText();
         }
     }
-}
+};
 
-public class ChainOfResponsibilityGUI {
-    public static void main(String[] args) {
-        Panel p = new Panel();
-        p.setHelperText("Panel help text.");
+int main() {
+    Panel p;
+    p.setHelperText("Panel help text.");
 
-        Button b1 = new Button("Ok", p);
-        b1.setHelperText("Ok button help text.");
+    Button b1("Ok", &p);
+    b1.setHelperText("Ok button help text.");
 
-        Button b2 = new Button("Cancel", p);
+    Button b2("Cancel", &p);
 
-        b1.showHelperText();
-        b2.showHelperText();
-    }
+    b1.showHelperText();
+    b2.showHelperText();
+
+    return 0;
 }
 
 /*

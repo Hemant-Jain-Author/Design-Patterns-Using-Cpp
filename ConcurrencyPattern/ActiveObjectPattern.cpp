@@ -1,80 +1,95 @@
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+#include <iostream>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <queue>
+#include <functional>
 
 // MethodRequest encapsulates a method call along with its arguments
 class MethodRequest {
-    private Runnable method;
+private:
+    std::function<void()> method;
 
-    public MethodRequest(Runnable method) {
-        this.method = method;
-    }
+public:
+    MethodRequest(std::function<void()> method) : method(method) {}
 
-    public void execute() {
-        method.run();
+    void execute() {
+        method();
     }
-}
+};
 
 // ActiveObject encapsulates its own thread of control and executes methods asynchronously
-class ActiveObject extends Thread {
-    private BlockingQueue<MethodRequest> queue;
-    private volatile boolean isRunning;
+class ActiveObject {
+private:
+    std::queue<MethodRequest> queue;
+    std::mutex mutex;
+    std::condition_variable condition;
+    volatile bool isRunning;
 
-    public ActiveObject() {
-        this.queue = new LinkedBlockingQueue<>();
-        this.isRunning = true;
-    }
+public:
+    ActiveObject() : isRunning(true) {}
 
-    @Override
-    public void run() {
-        while (isRunning || !queue.isEmpty()) {
-            try {
-                MethodRequest methodRequest = queue.take();
+    void run() {
+        while (isRunning || !queue.empty()) {
+            std::unique_lock<std::mutex> lock(mutex);
+            condition.wait(lock, [this] { return !queue.empty() || !isRunning; });
+
+            if (!queue.empty()) {
+                MethodRequest methodRequest = std::move(queue.front());
+                queue.pop();
+                lock.unlock();
+
                 methodRequest.execute();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }
 
-    public void scheduleMethod(Runnable method) {
-        MethodRequest methodRequest = new MethodRequest(method);
-        queue.add(methodRequest);
+    void scheduleMethod(std::function<void()> method) {
+        std::unique_lock<std::mutex> lock(mutex);
+        queue.emplace(method);
+        condition.notify_one();
     }
 
-    public void stopThread() {
+    void stopThread() {
         isRunning = false;
-        interrupt();
+        condition.notify_one();
     }
-}
+};
 
 // Proxy acts as a wrapper around the ActiveObject and forwards method calls to it
 class Proxy {
-    private ActiveObject activeObject;
+private:
+    ActiveObject& activeObject;
 
-    public Proxy(ActiveObject activeObject) {
-        this.activeObject = activeObject;
-    }
+public:
+    Proxy(ActiveObject& activeObject) : activeObject(activeObject) {}
 
-    public void invokeMethod(Runnable method) {
+    void invokeMethod(std::function<void()> method) {
         activeObject.scheduleMethod(method);
     }
-}
+};
 
 // Example usage
-public class ActiveObjectPattern {
-    public static void main(String[] args) {
-        // Create an instance of ActiveObject and Proxy
-        ActiveObject activeObject = new ActiveObject();
-        Proxy proxy = new Proxy(activeObject);
+int main() {
+    // Create an instance of ActiveObject and Proxy
+    ActiveObject activeObject;
+    Proxy proxy(activeObject);
 
-        // Start the ActiveObject thread
-        activeObject.start();
+    // Start the ActiveObject thread
+    std::thread activeObjectThread(&ActiveObject::run, &activeObject);
 
-        // Invoke methods on the Proxy
-        proxy.invokeMethod(() -> System.out.println("Hello"));
-        proxy.invokeMethod(() -> System.out.println("World"));
+    // Invoke methods on the Proxy
+    proxy.invokeMethod([]() { std::cout << "Hello" << std::endl; });
+    proxy.invokeMethod([]() { std::cout << "World" << std::endl; });
 
-        // Stop the ActiveObject thread
-        activeObject.stopThread();
-    }
+    // Stop the ActiveObject thread
+    activeObject.stopThread();
+    activeObjectThread.join();
+
+    return 0;
 }
+
+/*
+Hello
+World
+*/

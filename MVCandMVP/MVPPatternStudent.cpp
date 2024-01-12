@@ -1,74 +1,76 @@
+#include <iostream>
+#include <string>
+
 class Student {
-    private String name;
-    private int id;
+private:
+    std::string name;
+    int id;
 
-    public Student(String name, int id) {
-        this.name = name;
-        this.id = id;
-    }
+public:
+    Student(const std::string& name, int id) : name(name), id(id) {}
 
-    public String getName() {
+    const std::string& getName() const {
         return name;
     }
 
-    public int getId() {
+    int getId() const {
         return id;
     }
-}
+};
 
 class Model {
-    private Student student;
+private:
+    Student student;
 
-    public Model() {
-        this.student = new Student("Harry", 1);
+public:
+    Model() : student("Harry", 1) {}
+
+    void setData(const std::string& name, int id) {
+        std::cout << "Model: Set data : " << name << " " << id << std::endl;
+        this->student = Student(name, id);
     }
 
-    public void setData(String name, int id) {
-        System.out.println("Model: Set data : " + name + " " + id);
-        this.student = new Student(name, id);
-    }
-
-    public Student getData() {
-        System.out.println("Model: Get data.");
+    const Student& getData() const {
+        std::cout << "Model: Get data." << std::endl;
         return student;
     }
-}
+};
 
 class View {
-    public void update(String name, int id) {
-        System.out.println("View: Student Info : " + name + " " + id);
+public:
+    void update(const std::string& name, int id) const {
+        std::cout << "View: Student Info : " << name << " " << id << std::endl;
     }
-}
+};
 
 class Presenter {
-    private Model model;
-    private View view;
+private:
+    Model model;
+    View view;
 
-    public Presenter() {
-        this.model = new Model();
-        this.view = new View();
-    }
+public:
+    Presenter() : model(), view() {}
 
-    public void setData(String name, int id) {
-        System.out.println("Presenter: Receive data from client.");
+    void setData(const std::string& name, int id) {
+        std::cout << "Presenter: Receive data from client." << std::endl;
         model.setData(name, id);
     }
 
-    public void updateView() {
-        System.out.println("Presenter: Receive update from client.");
-        Student data = model.getData();
+    void updateView() {
+        std::cout << "Presenter: Receive update from client." << std::endl;
+        const Student& data = model.getData();
         view.update(data.getName(), data.getId());
     }
-}
+};
 
-public class MVPPatternStudent {
-    public static void main(String[] args) {
-        Presenter presenter = new Presenter();
-        presenter.updateView();
+int main() {
+    Presenter presenter;
+    presenter.updateView();
 
-        presenter.setData("jack", 2);
-        presenter.updateView();
-    }
+    presenter.setData("jack", 2);
+    presenter.updateView();
+
+    return 0;
 }
 
 /*

@@ -1,71 +1,84 @@
-import java.util.HashMap;
-import java.util.Map;
+#include <iostream>
+#include <unordered_map>
 
 // Abstract Expression
-interface Expression {
-    int interpret();
-}
+class Expression {
+public:
+    virtual int interpret() = 0;
+    virtual ~Expression() = default;
+};
 
 // Terminal Expression
-class NumberExpression implements Expression {
-    private int number;
+class NumberExpression : public Expression {
+private:
+    int number;
 
-    public NumberExpression(int number) {
-        this.number = number;
-    }
+public:
+    NumberExpression(int number) : number(number) {}
 
-    @Override
-    public int interpret() {
+    int interpret() override {
         return number;
     }
-}
+};
 
 // Non-terminal Expression
-class AddExpression implements Expression {
-    private Expression leftExpression;
-    private Expression rightExpression;
+class AddExpression : public Expression {
+private:
+    Expression* leftExpression;
+    Expression* rightExpression;
 
-    public AddExpression(Expression leftExpression, Expression rightExpression) {
-        this.leftExpression = leftExpression;
-        this.rightExpression = rightExpression;
+public:
+    AddExpression(Expression* left, Expression* right) : leftExpression(left), rightExpression(right) {}
+
+    int interpret() override {
+        return leftExpression->interpret() + rightExpression->interpret();
     }
 
-    @Override
-    public int interpret() {
-        return leftExpression.interpret() + rightExpression.interpret();
+    ~AddExpression() {
+        delete leftExpression;
+        delete rightExpression;
     }
-}
+};
 
 // Context
 class Context {
-    private Map<String, Integer> variables = new HashMap<>();
+private:
+    std::unordered_map<std::string, int> variables;
 
-    public void setVariable(String variable, int value) {
-        variables.put(variable, value);
+public:
+    void setVariable(const std::string& variable, int value) {
+        variables[variable] = value;
     }
 
-    public int getVariable(String variable) {
-        return variables.getOrDefault(variable, 0);
+    int getVariable(const std::string& variable) {
+        auto it = variables.find(variable);
+        return (it != variables.end()) ? it->second : 0;
     }
-}
+};
 
 // Client code
-public class InterpreterPattern2 {
-    public static void main(String[] args) {
-        Context context = new Context();
-        context.setVariable("x", 10);
-        context.setVariable("y", 5);
+int main() {
+    Context context;
+    context.setVariable("x", 10);
+    context.setVariable("y", 5);
 
-        // Create the expression tree: x + (y + 2)
-        Expression expression = new AddExpression(
-                new NumberExpression(context.getVariable("x")),
-                new AddExpression(
-                        new NumberExpression(context.getVariable("y")),
-                        new NumberExpression(2)
-                )
-        );
+    // Create the expression tree: x + (y + 2)
+    Expression* expression = new AddExpression(
+        new NumberExpression(context.getVariable("x")),
+        new AddExpression(
+            new NumberExpression(context.getVariable("y")),
+            new NumberExpression(2)
+        )
+    );
 
-        int result = expression.interpret();
-        System.out.println("Result: " + result);  // Output: Result: 17
-    }
+    int result = expression->interpret();
+    std::cout << "Result: " << result << std::endl;  // Output: Result: 17
+
+    delete expression;
+
+    return 0;
 }
+
+/*
+Result: 17
+*/

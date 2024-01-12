@@ -1,47 +1,51 @@
-abstract class ATMHandlerAbstract {
-    protected ATMHandlerAbstract successor;
-    protected int denomination;
+#include <iostream>
 
-    public ATMHandlerAbstract(ATMHandlerAbstract successor, int denomination) {
-        this.successor = successor;
-        this.denomination = denomination;
-    }
+class ATMHandlerAbstract {
+protected:
+    ATMHandlerAbstract* successor;
+    int denomination;
 
-    public abstract void handleRequest(int amount);
-}
+public:
+    ATMHandlerAbstract(ATMHandlerAbstract* successor, int denomination)
+        : successor(successor), denomination(denomination) {}
 
-class ATMHandler extends ATMHandlerAbstract {
-    public ATMHandler(ATMHandlerAbstract successor, int denomination) {
-        super(successor, denomination);
-    }
+    virtual void handleRequest(int amount) = 0;
+};
 
-    @Override
-    public void handleRequest(int amount) {
+class ATMHandler : public ATMHandlerAbstract {
+public:
+    ATMHandler(ATMHandlerAbstract* successor, int denomination)
+        : ATMHandlerAbstract(successor, denomination) {}
+
+    void handleRequest(int amount) override {
         int q = amount / denomination;
         int r = amount % denomination;
 
         if (q != 0) {
-            System.out.println(q + " notes of " + denomination);
+            std::cout << q << " notes of " << denomination << std::endl;
         }
 
-        if (r != 0 && successor != null) {
-            successor.handleRequest(r);
+        if (r != 0 && successor != nullptr) {
+            successor->handleRequest(r);
         }
     }
-}
+};
 
-public class ChainOfResATM {
-    public static void main(String[] args) {
-        ATMHandlerAbstract handler = new ATMHandler(
-                new ATMHandler(
-                        new ATMHandler(
-                                new ATMHandler(null, 10), 50
-                        ), 100
-                ), 1000
-        );
+int main() {
+    ATMHandlerAbstract* handler = new ATMHandler(
+        new ATMHandler(
+            new ATMHandler(
+                new ATMHandler(nullptr, 10), 50
+            ), 100
+        ), 1000
+    );
 
-        handler.handleRequest(5560);
-    }
+    handler->handleRequest(5560);
+
+    // Clean up memory
+    delete handler;
+
+    return 0;
 }
 
 /*
@@ -49,4 +53,4 @@ public class ChainOfResATM {
 5 notes of 100
 1 notes of 50
 1 notes of 10
- */
+*/

@@ -1,74 +1,87 @@
-import java.util.*;
+#include <iostream>
 
 // Animal interface
-interface Animal {
-    void voice();
-}
+class Animal {
+public:
+    virtual void voice() = 0;
+    virtual ~Animal() {}  // Ensure a virtual destructor for proper cleanup
+};
 
 // Concrete Animal classes
-class Dog implements Animal {
-    @Override
-    public void voice() {
-        System.out.println("Bhow Bhow!!");
+class Dog : public Animal {
+public:
+    void voice() override {
+        std::cout << "Bhow Bhow!!" << std::endl;
     }
-}
+};
 
-class Cat implements Animal {
-    @Override
-    public void voice() {
-        System.out.println("Meow Meow!!");
+class Cat : public Animal {
+public:
+    void voice() override {
+        std::cout << "Meow Meow!!" << std::endl;
     }
-}
+};
 
 // AnimalFactory interface
-interface AnimalFactory {
-    Animal getAnimal();
-}
+class AnimalFactory {
+public:
+    virtual Animal* getAnimal() = 0;
+    virtual ~AnimalFactory() {}  // Ensure a virtual destructor for proper cleanup
+};
 
 // Concrete AnimalFactory classes
-class CatFactory implements AnimalFactory {
-    @Override
-    public Animal getAnimal() {
+class CatFactory : public AnimalFactory {
+public:
+    Animal* getAnimal() override {
         return new Cat();
     }
-}
+};
 
-class DogFactory implements AnimalFactory {
-    @Override
-    public Animal getAnimal() {
+class DogFactory : public AnimalFactory {
+public:
+    Animal* getAnimal() override {
         return new Dog();
     }
-}
+};
 
 // Client code
-public class FactoryMethodAnimal {
-    public static void main(String[] args) {
-        AnimalFactory dogFactory = new DogFactory();
-        dogFactory.getAnimal().voice();
+int main() {
+    AnimalFactory* dogFactory = new DogFactory();
+    dogFactory->getAnimal()->voice();
 
-        AnimalFactory catFactory = new CatFactory();
-        catFactory.getAnimal().voice();
+    AnimalFactory* catFactory = new CatFactory();
+    catFactory->getAnimal()->voice();
 
-        // Future changes to include cow type of objects.
-        class Cow implements Animal {
-            @Override
-            public void voice() {
-                System.out.println("Gooaa Gooaa!!");
-            }
+    // Future changes to include cow type of objects.
+    class Cow : public Animal {
+    public:
+        void voice() override {
+            std::cout << "Gooaa Gooaa!!" << std::endl;
         }
+    };
 
-        class CowFactory implements AnimalFactory {
-            @Override
-            public Animal getAnimal() {
-                return new Cow();
-            }
+    class CowFactory : public AnimalFactory {
+    public:
+        Animal* getAnimal() override {
+            return new Cow();
         }
+    };
 
-        // Client code for Cow
-        AnimalFactory cowFactory = new CowFactory();
-        cowFactory.getAnimal().voice();
-    }
+    // Client code for Cow
+    AnimalFactory* cowFactory = new CowFactory();
+    cowFactory->getAnimal()->voice();
+
+    // Cleanup
+    delete dogFactory->getAnimal();
+    delete catFactory->getAnimal();
+    delete cowFactory->getAnimal();
+    delete dogFactory;
+    delete catFactory;
+    delete cowFactory;
+
+    return 0;
 }
+
 /*
 Bhow Bhow!!
 Meow Meow!!

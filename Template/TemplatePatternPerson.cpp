@@ -1,5 +1,9 @@
-abstract class AbstractWorker {
-    final void dailyRoutine() {
+#include <iostream>
+
+// AbstractWorker class
+class AbstractWorker {
+public:
+    void dailyRoutine() {
         wakeUp();
         eatBreakfast();
         goToWork();
@@ -9,65 +13,102 @@ abstract class AbstractWorker {
         sleep();
     }
 
+    virtual ~AbstractWorker() {}
+
+private:
     void wakeUp() {
-        System.out.println("Wake Up");
+        std::cout << "Wake Up" << std::endl;
     }
 
     void eatBreakfast() {
-        System.out.println("Eat Breakfast");
+        std::cout << "Eat Breakfast" << std::endl;
     }
 
     void goToWork() {
-        System.out.println("Go to work");
+        std::cout << "Go to work" << std::endl;
     }
 
-    abstract void work();
+    virtual void work() = 0;
 
     void comeBackHome() {
-        System.out.println("Come back Home");
+        std::cout << "Come back Home" << std::endl;
     }
 
     void eatDinner() {
-        System.out.println("Eat dinner");
+        std::cout << "Eat dinner" << std::endl;
     }
 
     void sleep() {
-        System.out.println("Sleep");
+        std::cout << "Sleep" << std::endl;
     }
+};
+
+// Doctor class
+class Doctor : public AbstractWorker {
+private:
+    void work() override {
+        std::cout << "...Treat Patients..." << std::endl;
+    }
+};
+
+// FireFighter class
+class FireFighter : public AbstractWorker {
+private:
+    void work() override {
+        std::cout << "...Fight Fire..." << std::endl;
+    }
+};
+
+// SuperHero class
+class SuperHero : public AbstractWorker {
+private:
+    void work() override {
+        std::cout << "...Save the world!..." << std::endl;
+    }
+};
+
+int main() {
+    // Example usage
+    AbstractWorker* doctor = new Doctor();
+    doctor->dailyRoutine();
+    std::cout << std::endl;
+
+    AbstractWorker* fireFighter = new FireFighter();
+    fireFighter->dailyRoutine();
+    std::cout << std::endl;
+
+    AbstractWorker* superHero = new SuperHero();
+    superHero->dailyRoutine();
+
+    delete doctor;       // Freeing allocated memory
+    delete fireFighter;  // Freeing allocated memory
+    delete superHero;    // Freeing allocated memory
+
+    return 0;
 }
 
-class Doctor extends AbstractWorker {
-    @Override
-    void work() {
-        System.out.println("...Treat Patients...");
-    }
-}
+/*
+Wake Up
+Eat Breakfast
+Go to work
+...Treat Patients...
+Come back Home
+Eat dinner
+Sleep
 
-class FireFighter extends AbstractWorker {
-    @Override
-    void work() {
-        System.out.println("...Fight Fire...");
-    }
-}
+Wake Up
+Eat Breakfast
+Go to work
+...Fight Fire...
+Come back Home
+Eat dinner
+Sleep
 
-class SuperHero extends AbstractWorker {
-    @Override
-    void work() {
-        System.out.println("...Save the world!...");
-    }
-}
-
-public class TemplatePatternPerson {
-    public static void main(String[] args) {
-        Doctor doctor = new Doctor();
-        doctor.dailyRoutine();
-        System.out.println();
-
-        FireFighter fireFighter = new FireFighter();
-        fireFighter.dailyRoutine();
-        System.out.println();
-
-        SuperHero superHero = new SuperHero();
-        superHero.dailyRoutine();
-    }
-}
+Wake Up
+Eat Breakfast
+Go to work
+...Save the world!...
+Come back Home
+Eat dinner
+Sleep
+*/

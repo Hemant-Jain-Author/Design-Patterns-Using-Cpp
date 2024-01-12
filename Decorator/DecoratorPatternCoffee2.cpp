@@ -1,76 +1,80 @@
-import java.util.List;
-import java.util.ArrayList;
+#include <iostream>
+#include <string>
 
 // ICoffee (Component)
-interface ICoffee {
-    int getCost();
-    String getIngredients();
-}
+class ICoffee {
+public:
+    virtual int getCost() const = 0;
+    virtual std::string getIngredients() const = 0;
+    virtual ~ICoffee() = default;
+};
 
 // SimpleCoffee (ConcreteComponent)
-class SimpleCoffee implements ICoffee {
-    @Override
-    public int getCost() {
+class SimpleCoffee : public ICoffee {
+public:
+    int getCost() const override {
         return 10;
     }
 
-    @Override
-    public String getIngredients() {
+    std::string getIngredients() const override {
         return "Coffee";
     }
-}
+};
 
 // CoffeeDecorator (Decorator)
-abstract class CoffeeDecorator implements ICoffee {
-    protected ICoffee component;
-    protected String name;
-    protected int cost;
+class CoffeeDecorator : public ICoffee {
+protected:
+    ICoffee* component;
+    std::string name;
+    int cost;
 
-    public CoffeeDecorator(ICoffee component, String name, int cost) {
-        this.component = component;
-        this.name = name;
-        this.cost = cost;
+public:
+    CoffeeDecorator(ICoffee* component, const std::string& name, int cost)
+        : component(component), name(name), cost(cost) {}
+
+    int getCost() const override {
+        return component->getCost() + cost;
     }
 
-    @Override
-    public int getCost() {
-        return component.getCost() + cost;
+    std::string getIngredients() const override {
+        return component->getIngredients() + ", " + name;
     }
 
-    @Override
-    public String getIngredients() {
-        return component.getIngredients() + ", " + name;
+    ~CoffeeDecorator() override {
+        delete component;
     }
-}
+};
 
 // MilkDecorator (ConcreteDecorator)
-class MilkDecorator extends CoffeeDecorator {
-    public MilkDecorator(ICoffee component) {
-        super(component, "Milk", 4);
-    }
-}
+class MilkDecorator : public CoffeeDecorator {
+public:
+    MilkDecorator(ICoffee* component) : CoffeeDecorator(component, "Milk", 4) {}
+};
 
 // EspressoDecorator (ConcreteDecorator)
-class EspressoDecorator extends CoffeeDecorator {
-    public EspressoDecorator(ICoffee component) {
-        super(component, "Espresso", 5);
-    }
-}
+class EspressoDecorator : public CoffeeDecorator {
+public:
+    EspressoDecorator(ICoffee* component) : CoffeeDecorator(component, "Espresso", 5) {}
+};
 
 // Client code
-public class DecoratorPatternCoffee2 {
-    public static void main(String[] args) {
-        ICoffee component = new SimpleCoffee();
-        ICoffee decorator1 = new MilkDecorator(component);
-        ICoffee decorator2 = new EspressoDecorator(decorator1);
+int main() {
+    ICoffee* component = new SimpleCoffee();
+    ICoffee* decorator1 = new MilkDecorator(component);
+    ICoffee* decorator2 = new EspressoDecorator(decorator1);
 
-        System.out.println("Coffee cost is :: " + decorator2.getCost());
-        System.out.println("Coffee ingredients are :: " + decorator2.getIngredients());
+    std::cout << "Coffee cost is :: " << decorator2->getCost() << std::endl;
+    std::cout << "Coffee ingredients are :: " << decorator2->getIngredients() << std::endl;
 
-        ICoffee latte = new MilkDecorator(new MilkDecorator(new SimpleCoffee()));
-        System.out.println("Coffee cost is :: " + latte.getCost());
-        System.out.println("Coffee ingredients are :: " + latte.getIngredients());
-    }
+    ICoffee* latte = new MilkDecorator(new MilkDecorator(new SimpleCoffee()));
+    std::cout << "Coffee cost is :: " << latte->getCost() << std::endl;
+    std::cout << "Coffee ingredients are :: " << latte->getIngredients() << std::endl;
+
+    // Clean up dynamically allocated memory
+    delete decorator2;
+    delete latte;
+
+    return 0;
 }
 
 /*
