@@ -1,89 +1,87 @@
+#include <iostream>
+#include <string>
+#include <sstream>
 
-
-import java.util.Scanner;
-
-//Model
 class Model {
-    private String data = "Default.";
+private:
+    std::string data = "Default.";
 
-    public void setData(String data) {
-        System.out.println("Model: Set data.");
-        this.data = data;
+public:
+    void setData(const std::string& data) {
+        std::cout << "Model: Set data." << std::endl;
+        this->data = data;
     }
 
-    public String getData() {
-        System.out.println("Model: Get data.");
+    std::string getData() {
+        std::cout << "Model: Get data." << std::endl;
         return data;
     }
-}
+};
 
-//View
-class View {
-    private ViewModel viewModel;
-
-    public View(ViewModel viewModel) {
-        this.viewModel = viewModel;
-    }
-
-    public void displayData() {
-        System.out.println("Display Data: " + viewModel.getData());
-    }
-
-    public void getUserInput() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("View: Enter user input: ");
-        String userInput = scanner.nextLine();
-        viewModel.setData(userInput);
-    }
-}
-
-// ViewModel
 class ViewModel {
-    private Model model;
+private:
+    Model* model;
 
-    public ViewModel(Model model) {
-        this.model = model;
+public:
+    ViewModel(Model* model) : model(model) {}
+
+    void setData(const std::string& data) {
+        std::cout << "ViewModel: Set data." << std::endl;
+        model->setData(data);
     }
 
-    public void setData(String data) {
-        System.out.println("ViewModel: Set data.");
-        model.setData(data);
+    std::string getData() {
+        std::cout << "ViewModel: Get data." << std::endl;
+        return model->getData();
+    }
+};
+
+class View {
+private:
+    ViewModel* viewModel;
+
+public:
+    View(ViewModel* viewModel) : viewModel(viewModel) {}
+
+    void displayData() {
+        std::cout << "Display Data: " << viewModel->getData() << std::endl;
     }
 
-    public String getData() {
-        System.out.println("ViewModel: Get data.");
-        return model.getData();
+    void getUserInput() {
+        std::cout << "View: Enter user input: ";
+        std::string userInput;
+        userInput = "Hello, World!";
+        std::cout << userInput << std::endl;
+        // std::getline(std::cin, userInput); // Uncomment for user input
+        viewModel->setData(userInput);
     }
+};
+
+int main() {
+    Model model;
+    ViewModel viewModel(&model);
+    View view(&viewModel);
+
+    // Display initial data
+    view.displayData();
+
+    // Get user input and update data
+    view.getUserInput();
+
+    // Display updated data
+    view.displayData();
+
+    return 0;
 }
-
-// Client code
-public class MVVM {
-    public static void main(String[] args) {
-        Model model = new Model();
-        ViewModel viewModel = new ViewModel(model);
-        View view = new View(viewModel);
-
-        // Display initial data
-        view.displayData();
-
-        // Get user input and update data
-        view.getUserInput();
-
-        // Display updated data
-        view.displayData();
-    }
-}
-
-
 
 /*
-ViewModel: Get data.
+Display Data: ViewModel: Get data.
 Model: Get data.
-Display Data: Default.
-View: Enter user input: hello, world!
+Default.
+View: Enter user input: Hello, World!
 ViewModel: Set data.
 Model: Set data.
-ViewModel: Get data.
+Display Data: ViewModel: Get data.
 Model: Get data.
-Display Data: hello, world!
+Hello, World!
 */

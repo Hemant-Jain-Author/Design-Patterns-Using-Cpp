@@ -1,71 +1,66 @@
-import java.util.Scanner;
+#include <iostream>
+#include <string>
 
-// Model
 class Model {
-    private String data;
+private:
+    std::string data;
 
-    public Model() {
-        this.data = "Hello";
+public:
+    Model() : data("Hello") {}
+
+    void setData(const std::string& data) {
+        std::cout << "Model: Set data: " << data << std::endl;
+        this->data = data;
     }
 
-    public void setData(String data) {
-        System.out.println("Model: Set data: " + data);
-        this.data = data;
+    std::string getData() {
+        std::cout << "Model: Get data: " << this->data << std::endl;
+        return this->data;
     }
+};
 
-    public String getData() {
-        System.out.println("Model: Get data: " + this.data);
-        return this.data;
-    }
-}
-
-// View
 class View {
-    public String getUserInput() {
-        System.out.println("View: getUserInput");
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("View: Enter user input: ");
-        String userInput = "Hello, World!";
-        System.out.println(userInput);
-        //String userInput = scanner.nextLine();
+public:
+    std::string getUserInput() {
+        std::cout << "View: getUserInput" << std::endl;
+        std::cout << "View: Enter user input: ";
+        std::string userInput = "Hello, World!";
+        std::cout << userInput << std::endl;
+        // std::getline(std::cin, userInput); // Uncomment for user input
         return userInput;
     }
 
-    public void displayData(String data) {
-        System.out.println("View: Display Result: " + data);
+    void displayData(const std::string& data) {
+        std::cout << "View: Display Result: " << data << std::endl;
     }
-}
+};
 
-// Presenter
 class Presenter {
-    private Model model;
-    private View view;
+private:
+    Model* model;
+    View* view;
 
-    public Presenter(Model model, View view) {
-        this.model = model;
-        this.view = view;
-    }
+public:
+    Presenter(Model* model, View* view) : model(model), view(view) {}
 
-    public void onButtonClick() {
-        System.out.println("Presenter: onButtonClick.");
-        String data = this.view.getUserInput();
-        this.model.setData(data);
-        data = this.model.getData();
-        this.view.displayData(data);
+    void onButtonClick() {
+        std::cout << "Presenter: onButtonClick." << std::endl;
+        std::string data = this->view->getUserInput();
+        this->model->setData(data);
+        data = this->model->getData();
+        this->view->displayData(data);
     }
+};
+
+int main() {
+    Model model;
+    View view;
+    Presenter presenter(&model, &view);
+    presenter.onButtonClick();
+    return 0;
 }
 
-// Main class
-public class MVP {
-    public static void main(String[] args) {
-        Model model = new Model();
-        View view = new View();
-        Presenter presenter = new Presenter(model, view);
-        presenter.onButtonClick();
-    }
-}
-
-/* 
+/*
 Presenter: onButtonClick.
 View: getUserInput
 View: Enter user input: Hello, World!

@@ -1,72 +1,91 @@
-
-import java.util.ArrayList;
-import java.util.List;
+#include <iostream>
+#include <string>
+#include <vector>
 
 // Filter Base Class
-abstract class Filter {
-    abstract String process(String data);
-}
+class Filter {
+public:
+    virtual std::string process(const std::string& data) = 0;
+    virtual ~Filter() {}
+};
 
 // Filters
-class CapitalizeFilter extends Filter {
-    @Override
-    String process(String data) {
-        return data.toUpperCase();
+class CapitalizeFilter : public Filter {
+public:
+    std::string process(const std::string& data) override {
+        std::string processedData = data;
+        for (char& c : processedData) {
+            c = std::toupper(c);
+        }
+        return processedData;
     }
-}
+};
 
-class ReplaceSpaceFilter extends Filter {
-    @Override
-    String process(String data) {
-        return data.replace(" ", "_");
-    }
-}
-
-class RemoveSpecialCharactersFilter extends Filter {
-    @Override
-    String process(String data) {
-        String specialCharacters = ",@!";
-        StringBuilder result = new StringBuilder();
-        for (char c : data.toCharArray()) {
-            if (specialCharacters.indexOf(c) == -1) {
-                result.append(c);
+class ReplaceSpaceFilter : public Filter {
+public:
+    std::string process(const std::string& data) override {
+        std::string processedData = data;
+        for (char& c : processedData) {
+            if (c == ' ') {
+                c = '_';
             }
         }
-        return result.toString();
+        return processedData;
     }
-}
+};
+
+class RemoveSpecialCharactersFilter : public Filter {
+public:
+    std::string process(const std::string& data) override {
+        std::string processedData;
+        for (char c : data) {
+            if (c != ',' && c != '@' && c != '!') {
+                processedData += c;
+            }
+        }
+        return processedData;
+    }
+};
 
 // Data Processing Pipeline
 class DataProcessingPipeline {
-    private List<Filter> filters;
+private:
+    std::vector<Filter*> filters;
 
-    public DataProcessingPipeline() {
-        this.filters = new ArrayList<>();
-    }
-
-    public void addFilter(Filter filter) {
-        this.filters.add(filter);
-    }
-
-    public String processData(String data) {
-        for (Filter filter : this.filters) {
-            data = filter.process(data);
+public:
+    ~DataProcessingPipeline() {
+        for (Filter* filter : filters) {
+            delete filter;
         }
-        return data;
     }
+
+    void addFilter(Filter* filter) {
+        filters.push_back(filter);
+    }
+
+    std::string processData(const std::string& data) {
+        std::string processedData = data;
+        for (Filter* filter : filters) {
+            processedData = filter->process(processedData);
+        }
+        return processedData;
+    }
+};
+
+// Main function
+int main() {
+    DataProcessingPipeline pipeline;
+    pipeline.addFilter(new CapitalizeFilter());
+    pipeline.addFilter(new ReplaceSpaceFilter());
+    pipeline.addFilter(new RemoveSpecialCharactersFilter());
+
+    std::string data = "Hello, World!";
+    std::string result = pipeline.processData(data);
+    std::cout << "Result: " << result << std::endl;  // Output: "HELLO_WORLD"
+
+    return 0;
 }
 
-// Main class
-public class PipeAndFilter {
-    public static void main(String[] args) {
-        DataProcessingPipeline pipeline = new DataProcessingPipeline();
-        pipeline.addFilter(new CapitalizeFilter());
-        pipeline.addFilter(new ReplaceSpaceFilter());
-        pipeline.addFilter(new RemoveSpecialCharactersFilter());
-
-        String data = "Hello, World!";
-        String result = pipeline.processData(data);
-        System.out.println("Result: " + result);  // Output: "HELLO_WORLD"
-    }
-}
-
+/*
+Result: HELLO_WORLD
+*/

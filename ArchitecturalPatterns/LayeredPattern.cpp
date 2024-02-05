@@ -68,3 +68,10 @@ int main() {
 
     return 0;
 }
+
+
+/*
+1. Apple
+2. Banana
+3. Mango
+*/

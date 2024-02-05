@@ -1,7 +1,6 @@
 #include <iostream>
 #include <thread>
 #include <string>
-#include <mutex>
 
 class ThreadLocalValue {
 private:
@@ -29,7 +28,6 @@ public:
     static void main() {
         // Create and start multiple worker threads
         std::thread threads[3];
-
         for (int i = 0; i < 3; i++) {
             threads[i] = std::thread([i] { workerThread(i); });
         }

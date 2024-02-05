@@ -1,36 +1,42 @@
 #include <iostream>
-#include <string>
 #include <vector>
+#include <string>
 #include <memory>
 #include <sstream>
+#include <algorithm>
 
-// Forward declarations
-class Controller;
+
+// Observer interface
+class Observer {
+public:
+    virtual void update() = 0;
+};
+
 
 // Model
 class Model {
 private:
     std::string data;
-    std::vector<Controller*> observers;
+    std::vector<Observer*> observers;
 
 public:
-    void setData(std::string data) {
+    void setData(std::string d) {
         std::cout << "Model : Set data." << std::endl;
-        this->data = data;
+        data = d;
         notifyObservers();
     }
 
     std::string getData() {
         std::cout << "Model : Get data." << std::endl;
-        return this->data;
+        return data;
     }
 
-    void addObserver(Controller* observer) {
+    void addObserver(Observer* observer) {
         observers.push_back(observer);
     }
 
-    void removeObserver(Controller* observer) {
-        // Not implemented
+    void removeObserver(Observer* observer) {
+        observers.erase(std::remove(observers.begin(), observers.end(), observer), observers.end());
     }
 
     void notifyObservers() {
@@ -41,15 +47,17 @@ public:
     }
 };
 
+
+
 // View
-class View {
+class View  : public Observer {
 private:
-    Controller* controller;
+    class Controller* controller;
     Model* model;
 
 public:
     View(Model* model, Controller* controller) : model(model), controller(controller) {
-        model->addObserver(controller);
+        model->addObserver(this);
     }
 
     void update() {
@@ -58,12 +66,7 @@ public:
         std::cout << "Data: " << data << std::endl;
     }
 
-    void getUserInput() {
-        std::cout << "View : Enter user input: ";
-        std::string userInput;
-        std::getline(std::cin, userInput);
-        controller->handleUserInput(userInput);
-    }
+    void getUserInput() ;
 };
 
 // Controller
@@ -89,6 +92,16 @@ public:
     }
 };
 
+void View::getUserInput() 
+{
+    std::cout << "View : Enter user input: ";
+    //std::string userInput;
+    std::string userInput = "Hello, World!";
+    std::cout << userInput << std::endl;
+    // std::getline(std::cin, userInput); // Uncomment for user input    
+    controller->handleUserInput(userInput);
+}
+
 // Main function
 int main() {
     Model model;
@@ -98,3 +111,13 @@ int main() {
     view.getUserInput();
     return 0;
 }
+
+/*
+View : Enter user input: Hello, World!
+Controller : Handle user input.
+Model : Set data.
+Model : Notify observers.
+View : Update.
+Model : Get data.
+Data: Hello, World!
+*/
