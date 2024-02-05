@@ -1,73 +1,63 @@
+#include <iostream>
 
 class Rectangle {
-    private int height;
-    private int width;
+private:
+    int height;
+    int width;
 
-    public Rectangle(int l, int w) {
-        this.height = l;
-        this.width = w;
+public:
+    Rectangle(int l, int w) : height(l), width(w) {}
+
+    virtual void setWidth(int w) {
+        width = w;
     }
 
-    public void setWidth(int w) {
-        this.width = w;
+    virtual void setHeight(int h) {
+        height = h;
     }
 
-    public void setHeight(int h) {
-        this.height = h;
+    int getWidth() const {
+        return width;
     }
 
-    public int getWidth() {
-        return this.width;
+    int getHeight() const {
+        return height;
+    }
+};
+
+class Square : public Rectangle {
+public:
+    Square(int l) : Rectangle(l, l) {}
+
+    void setWidth(int w) override {
+        Rectangle::setWidth(w);
+        Rectangle::setHeight(w);
     }
 
-    public int getHeight() {
-        return this.height;
+    void setHeight(int h) override {
+        Rectangle::setWidth(h);
+        Rectangle::setHeight(h);
     }
+};
+
+void testRect(Rectangle& rect) {
+    rect.setHeight(10);
+    rect.setWidth(20);
+    if (200 == rect.getHeight() * rect.getWidth())
+        std::cout << "success" << std::endl;
+    else
+        std::cout << "failure" << std::endl;
 }
 
-class Square extends Rectangle {
-    public Square(int l) {
-        super(l, l);
-    }
+int main() {
+    Rectangle r(10, 20);
+    testRect(r);
 
-    @Override
-    public void setWidth(int w) {
-        super.setWidth(w);
-        super.setHeight(w);
-    }
+    Square s(10);
+    s.setWidth(20);
+    testRect(s);
 
-    @Override
-    public void setHeight(int h) {
-        super.setHeight(h);
-        super.setWidth(h);
-    }
-}
-
-public class LiskovSubstitutionPrinciple3 {
-    public static void testRectangle() {
-        Rectangle r = new Rectangle(10, 20);
-        testRect(r);
-    }
-
-    public static void testSquare() {
-        Square s = new Square(10);
-        s.setWidth(20);
-        testRect(s);
-    }
-
-    private static void testRect(Rectangle rect) {
-        rect.setHeight(10);
-        rect.setWidth(20);
-        if(200 == rect.getHeight() * rect.getWidth())
-            System.out.println("success");
-        else
-            System.out.println("failure");
-    }
-
-    public static void main(String[] args) {
-        testRectangle();
-        testSquare();
-    }
+    return 0;
 }
 
 /*

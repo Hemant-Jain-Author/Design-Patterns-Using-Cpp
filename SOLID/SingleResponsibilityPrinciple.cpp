@@ -1,72 +1,71 @@
+#include <iostream>
+#include <string>
+
 class Animal {
-    String name;
+protected:
+    std::string name;
 
-    public Animal(String name) {
-        this.name = name;
+public:
+    Animal(const std::string& name) : name(name) {}
+
+    void eat() {
+        std::cout << name << " is eating." << std::endl;
     }
 
-    public void eat() {
-        System.out.println(name + " is eating.");
+    void sleep() {
+        std::cout << name << " is sleeping." << std::endl;
     }
 
-    public void sleep() {
-        System.out.println(name + " is sleeping.");
+    void makeSound() {
+        std::cout << name << " is making a sound." << std::endl;
+    }
+};
+
+class Mammal : public Animal {
+public:
+    Mammal(const std::string& name) : Animal(name) {}
+
+    void giveBirth() {
+        std::cout << name << " is giving birth to live young." << std::endl;
+    }
+};
+
+class Reptile : public Animal {
+public:
+    Reptile(const std::string& name) : Animal(name) {}
+
+    void layEggs() {
+        std::cout << name << " is laying eggs." << std::endl;
+    }
+};
+
+class Bird : public Animal {
+public:
+    Bird(const std::string& name) : Animal(name) {}
+
+    void fly() {
+        std::cout << name << " is flying." << std::endl;
     }
 
-    public void makeSound() {
-        System.out.println(name + " is making a sound.");
+    void layEggs() {
+        std::cout << name << " is laying eggs." << std::endl;
     }
-}
+};
 
-class Mammal extends Animal {
-    public Mammal(String name) {
-        super(name);
-    }
+int main() {
+    Mammal animal1("Cat");
+    animal1.giveBirth();
+    animal1.makeSound();
 
-    public void giveBirth() {
-        System.out.println(name + " is giving birth to live young.");
-    }
-}
+    Reptile animal2("Snake");
+    animal2.layEggs();
+    animal2.eat();
 
-class Reptile extends Animal {
-    public Reptile(String name) {
-        super(name);
-    }
+    Bird animal3("Eagle");
+    animal3.layEggs();
+    animal3.fly();
 
-    public void layEggs() {
-        System.out.println(name + " is laying eggs.");
-    }
-}
-
-class Bird extends Animal {
-    public Bird(String name) {
-        super(name);
-    }
-
-    public void fly() {
-        System.out.println(name + " is flying.");
-    }
-
-    public void layEggs() {
-        System.out.println(name + " is laying eggs.");
-    }
-}
-
-// Client code.
-public class SingleResponsibilityPrinciple {
-    public static void main(String[] args) {
-        Mammal animal1 = new Mammal("Cat");
-        animal1.giveBirth();
-        animal1.makeSound();
-
-        Reptile animal2 = new Reptile("Snake");
-        animal2.layEggs();
-        animal2.eat();
-
-        Bird animal3 = new Bird("Eagle");
-        animal3.layEggs();
-        animal3.fly();
-    }
+    return 0;
 }
 
 /*

@@ -1,101 +1,92 @@
+#include <iostream>
 
-import java.util.*;
+class Animal {
+protected:
+    std::string name;
 
-abstract class Animal {
-    String name;
+public:
+    Animal(const std::string& name) : name(name) {}
 
-    public Animal(String name) {
-        this.name = name;
+    virtual void makeSound() const {
+        std::cout << "Animal sound" << std::endl;
     }
+};
 
-    void makeSound() {
-    	System.out.println("Animal sound");
-    }
-}
+class Dog : public Animal {
+public:
+    Dog(const std::string& name) : Animal(name) {}
 
-class Dog extends Animal {
-    public Dog(String name) {
-        super(name);
+    void makeSound() const override {
+        std::cout << "woof woof!" << std::endl;
     }
+};
 
-    @Override
-    void makeSound() {
-        System.out.println("woof woof!");
-    }
-}
+class Cat : public Animal {
+public:
+    Cat(const std::string& name) : Animal(name) {}
 
-class Cat extends Animal {
-    public Cat(String name) {
-        super(name);
+    void makeSound() const override {
+        std::cout << "meow!" << std::endl;
     }
-
-    @Override
-    void makeSound() {
-        System.out.println("meow!");
-    }
-}
+};
 
 class Rectangle {
-    private int height;
-    private int width;
+protected:
+    int height;
+    int width;
 
-    public Rectangle(int l, int w) {
-        this.height = l;
-        this.width = w;
+public:
+    Rectangle(int h, int w) : height(h), width(w) {}
+
+    virtual void setWidth(int w) {
+        width = w;
     }
 
-    public void setWidth(int w) {
-        this.width = w;
+    virtual void setHeight(int h) {
+        height = h;
     }
 
-    public void setHeight(int h) {
-        this.height = h;
+    int getWidth() const {
+        return width;
     }
 
-    public int getWidth() {
-        return this.width;
+    int getHeight() const {
+        return height;
+    }
+};
+
+class Square : public Rectangle {
+public:
+    Square(int l) : Rectangle(l, l) {}
+
+    void setWidth(int w) override {
+        width = w;
+        height = w;
     }
 
-    public int getHeight() {
-        return this.height;
+    void setHeight(int h) override {
+        width = h;
+        height = h;
     }
+};
+
+void testRect(Rectangle& rect) {
+    rect.setHeight(10);
+    rect.setWidth(20);
+    if (200 == rect.getHeight() * rect.getWidth())
+        std::cout << "success" << std::endl;
+    else
+        std::cout << "failure" << std::endl;
 }
 
-class Square extends Rectangle {
-    public Square(int l) {
-        super(l, l);
-    }
-
-    @Override
-    public void setWidth(int w) {
-        super.setWidth(w);
-        super.setHeight(w);
-    }
-
-    @Override
-    public void setHeight(int h) {
-        super.setWidth(h);
-        super.setHeight(h);
-    }
+int main() {
+    Rectangle r(10, 20);
+    testRect(r);
+    Square s(10);
+    testRect(s);
+    return 0;
 }
 
-public class LiskovSubstitutionPrinciple {
-    private static void testRect(Rectangle rect) {
-        rect.setHeight(10);
-        rect.setWidth(20);
-        if(200 == rect.getHeight() * rect.getWidth())
-            System.out.println("success");
-        else
-            System.out.println("failure");
-    }
-
-    public static void main(String[] args) {
-    	Rectangle r = new Rectangle(10, 20);
-    	testRect(r);
-    	Square s = new Square(10);
-    	testRect(s);
-    }
-}
 
 /*
 success

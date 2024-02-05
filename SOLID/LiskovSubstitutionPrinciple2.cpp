@@ -1,82 +1,86 @@
-abstract class Animal {
-    String name;
+#include <iostream>
+#include <string>
 
-    Animal(String name) {
-        this.name = name;
-    }
-}
+class Animal {
+protected:
+    std::string name;
 
-abstract class Bird extends Animal {
+public:
+    Animal(const std::string& name) : name(name) {}
+};
+
+class Bird : public Animal {
+protected:
     int flightHeight;
 
-    Bird(String name) {
-        super(name);
-        this.flightHeight = 0;
+public:
+    Bird(const std::string& name) : Animal(name), flightHeight(0) {}
+
+    virtual void fly() = 0;
+
+    virtual int getFlightHeight(){
+        return flightHeight;
     }
+};
 
-    abstract void fly();
-}
+class Sparrow : public Bird {
+public:
+    Sparrow(const std::string& name) : Bird(name) {}
 
-class Sparrow extends Bird {
-    Sparrow(String name) {
-        super(name);
-    }
-
-    void fly() {
-        System.out.println("The sparrow is fluttering its wings.");
+    void fly() override {
+        std::cout << "The sparrow is fluttering its wings." << std::endl;
         flightHeight = 100;
     }
-}
+};
 
-class Penguin extends Bird {
-    Penguin(String name) {
-        super(name);
-    }
+class Penguin : public Bird {
+public:
+    Penguin(const std::string& name) : Bird(name) {}
 
-    void fly() {
-        System.out.println("The penguin cannot fly.");
+    void fly() override {
+        std::cout << "The penguin cannot fly." << std::endl;
     }
 
     void slide() {
-        System.out.println("The penguin is sliding on its belly!");
+        std::cout << "The penguin is sliding on its belly!" << std::endl;
     }
 
     void swim() {
-        System.out.println("The penguin is swimming in the water!");
+        std::cout << "The penguin is swimming in the water!" << std::endl;
+    }
+};
+
+class Dodo : public Bird {
+public:
+    Dodo(const std::string& name) : Bird(name) {}
+
+    void fly() override {
+        std::cout << "The dodo is extinct and cannot fly." << std::endl;
+    }
+};
+
+void test(Bird* bird) {
+    bird->fly();
+    if (bird->getFlightHeight() > 0) {
+        std::cout << "Bird is flying at a positive height." << std::endl;
+    } else {
+        std::cout << "Error: fly() method called; flight height is still zero." << std::endl;
     }
 }
 
-class Dodo extends Bird {
-    Dodo(String name) {
-        super(name);
-    }
+int main() {
+    Sparrow sparrow("Sparrow");
+    test(&sparrow);
 
-    void fly() {
-        System.out.println("The dodo is extinct and cannot fly.");
-    }
+    Penguin penguin("Penguin");
+    test(&penguin);
+
+    Dodo dodo("Dodo");
+    test(&dodo);
+
+    return 0;
 }
 
-public class LiskovSubstitutionPrinciple2 {
-    static void test(Bird bird) {
-        bird.fly();
-        if (bird.flightHeight > 0) {
-            System.out.println("Bird is flying at a positive height.");
-        } else {
-            System.out.println("Error: fly() method called; flight height is still zero.");
-        }
-    }
-
-    public static void main(String[] args) {
-        Sparrow sparrow = new Sparrow("Sparrow");
-        test(sparrow);
-
-        Penguin penguin = new Penguin("Penguin");
-        test(penguin);
-
-        Dodo dodo = new Dodo("Dodo");
-        test(dodo);
-    }
-}
 
 /*
 The sparrow is fluttering its wings.

@@ -1,41 +1,37 @@
+#include <iostream>
+#include <string>
+
 class Animal {
-    String name;
+protected:
+    std::string name;
 
-    public Animal(String name) {
-        this.name = name;
-    }
-}
+public:
+    Animal(const std::string& name) : name(name) {}
+};
 
-class Bird extends Animal {
-    public Bird(String name) {
-        super(name);
-    }
+class Bird : public Animal {
+public:
+    Bird(const std::string& name) : Animal(name) {}
 
     void fly() {
-        if (name.equals("Dodo")) {
-            System.out.println("The dodo is extinct and cannot fly.");
-        } else if (name.equals("Penguin")) {
-            System.out.println("The penguin cannot fly.");
-        } else if (name.equals("Eagle")) {
-            System.out.println("The eagle is soaring through the sky!");
-        } else if (name.equals("Sparrow")) {
-            System.out.println("The sparrow is fluttering its wings!");
+        if (name == "Dodo") {
+            std::cout << "The dodo is extinct and cannot fly." << std::endl;
+        } else if (name == "Penguin") {
+            std::cout << "The penguin cannot fly." << std::endl;
+        } else if (name == "Eagle") {
+            std::cout << "The eagle is soaring through the sky!" << std::endl;
+        } else if (name == "Sparrow") {
+            std::cout << "The sparrow is fluttering its wings!" << std::endl;
         }
     }
+};
+
+int main() {
+    Bird bird1("Eagle");
+    bird1.fly();
+
+    Bird bird2("Dodo");
+    bird2.fly();
+
+    return 0;
 }
-
-// Client code
-public class OpenClosedPrinciple2 {
-    public static void main(String[] args) {
-        Bird bird1 = new Bird("Eagle");
-        bird1.fly();
-
-        Bird bird2 = new Bird("Dodo");
-        bird2.fly();
-    }
-}
-
-/*
-The eagle is soaring through the sky!
-The dodo is extinct and cannot fly.
-*/
