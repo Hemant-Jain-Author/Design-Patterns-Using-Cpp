@@ -1,41 +1,60 @@
-public class Blob {
-    private String data;
+#include <iostream>
+#include <string>
 
-    public Blob(String data) {
-        this.data = data;
-    }
+class Blob {
+private:
+    std::string data;
 
-    public void processData() {
+public:
+    Blob(std::string data) : data(data) {}
+
+    void processData() {
         // Process data
     }
 
-    public void validateData() {
+    void validateData() {
         // Validate data
     }
 
-    public void saveData() {
+    void saveData() {
         // Save data to database
     }
 
-    public void sendNotification() {
+    void sendNotification() {
         // Send notification
     }
 
-    public void generateReport() {
+    void generateReport() {
         // Generate report
     }
 
-    public void backupData() {
+    void backupData() {
         // Backup data
     }
 
-    public void archiveData() {
+    void archiveData() {
         // Archive data
     }
 
-    public void purgeData() {
+    void purgeData() {
         // Purge data
     }
 
     // And so on...
+};
+
+int main() {
+    Blob blob("Example data");
+
+    // You can use blob object and call its methods as required.
+    blob.processData();
+    blob.validateData();
+    blob.saveData();
+    blob.sendNotification();
+    blob.generateReport();
+    blob.backupData();
+    blob.archiveData();
+    blob.purgeData();
+
+    return 0;
 }

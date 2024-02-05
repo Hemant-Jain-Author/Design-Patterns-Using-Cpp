@@ -1,42 +1,38 @@
-#include <iostream>
-#include <string>
-
 class Animal {
-protected:
-    std::string name;
-public:
-    Animal(const std::string& name) : name(name) {}
-};
+    String name;
 
-class Bird : public Animal {
-public:
-    Bird(const std::string& name) : Animal(name) {}
+    public Animal(String name) {
+        this.name = name;
+    }
+}
+
+class Bird extends Animal {
+    public Bird(String name) {
+        super(name);
+    }
 
     void fly() {
-        if (name == "Dodo") {
-            std::cout << "The dodo is extinct and cannot fly." << std::endl;
-        } else if (name == "Penguin") {
-            std::cout << "The penguin cannot fly." << std::endl;
-        } else if (name == "Eagle") {
-            std::cout << "The eagle is soaring through the sky!" << std::endl;
-        } else if (name == "Sparrow") {
-            std::cout << "The sparrow is fluttering its wings!" << std::endl;
+        if (name.equals("Dodo")) {
+            System.out.println("The dodo is extinct and cannot fly.");
+        } else if (name.equals("Penguin")) {
+            System.out.println("The penguin cannot fly.");
+        } else if (name.equals("Eagle")) {
+            System.out.println("The eagle is soaring through the sky!");
+        } else if (name.equals("Sparrow")) {
+            System.out.println("The sparrow is fluttering its wings!");
         }
     }
-};
+}
 
 // Client code
-int main() {
-    Bird* bird1 = new Bird("Eagle");
-    bird1->fly();
+public class OpenClosedPrinciple2 {
+    public static void main(String[] args) {
+        Bird bird1 = new Bird("Eagle");
+        bird1.fly();
 
-    Bird* bird2 = new Bird("Dodo");
-    bird2->fly();
-
-    delete bird1;
-    delete bird2;
-
-    return 0;
+        Bird bird2 = new Bird("Dodo");
+        bird2.fly();
+    }
 }
 
 /*

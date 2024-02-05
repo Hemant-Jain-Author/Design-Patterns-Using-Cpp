@@ -1,77 +1,81 @@
-#include <iostream>
+abstract class Animal {
+    String name;
 
-class Animal {
-    std::string name;
-public:
-    Animal(const std::string& name) : name(name) {}
-};
-
-class Bird : public Animal {
-protected:
-    int flightHeight;
-public:
-    Bird(const std::string& name) : Animal(name), flightHeight(0) {}
-    int getHeight() { return flightHeight; }
-    virtual void fly() = 0;
-};
-
-class Sparrow : public Bird {
-public:
-    Sparrow(const std::string& name) : Bird(name) {}
-    void fly() override {
-        std::cout << "The sparrow is fluttering its wings." << std::endl;
-        flightHeight = 100;
-    }
-};
-
-class Penguin : public Bird {
-public:
-    Penguin(const std::string& name) : Bird(name) {}
-
-    void fly() override {
-        std::cout << "The penguin cannot fly." << std::endl;
-    }
-
-    void slide() {
-        std::cout << "The penguin is sliding on its belly!" << std::endl;
-    }
-
-    void swim() {
-        std::cout << "The penguin is swimming in the water!" << std::endl;
-    }
-};
-
-class Dodo : public Bird {
-public:
-    Dodo(const std::string& name) : Bird(name) {}
-
-    void fly() override {
-        std::cout << "The dodo is extinct and cannot fly." << std::endl;
-    }
-};
-
-void test(Bird* bird) {
-    bird->fly();
-    if (bird->getHeight() > 0) {
-        std::cout << "Bird is flying at a positive height." << std::endl;
-    } else {
-        std::cout << "Error: fly() method called; flight height is still zero." << std::endl;
+    Animal(String name) {
+        this.name = name;
     }
 }
 
-int main() {
-    Sparrow sparrow("Sparrow");
-    test(&sparrow);
+abstract class Bird extends Animal {
+    int flightHeight;
 
-    Penguin penguin("Penguin");
-    test(&penguin);
-    penguin.slide();
-    penguin.swim();
+    Bird(String name) {
+        super(name);
+        this.flightHeight = 0;
+    }
 
-    Dodo dodo("Dodo");
-    test(&dodo);
+    abstract void fly();
+}
 
-    return 0;
+class Sparrow extends Bird {
+    Sparrow(String name) {
+        super(name);
+    }
+
+    void fly() {
+        System.out.println("The sparrow is fluttering its wings.");
+        flightHeight = 100;
+    }
+}
+
+class Penguin extends Bird {
+    Penguin(String name) {
+        super(name);
+    }
+
+    void fly() {
+        System.out.println("The penguin cannot fly.");
+    }
+
+    void slide() {
+        System.out.println("The penguin is sliding on its belly!");
+    }
+
+    void swim() {
+        System.out.println("The penguin is swimming in the water!");
+    }
+}
+
+class Dodo extends Bird {
+    Dodo(String name) {
+        super(name);
+    }
+
+    void fly() {
+        System.out.println("The dodo is extinct and cannot fly.");
+    }
+}
+
+public class LiskovSubstitutionPrinciple2 {
+    static void test(Bird bird) {
+        bird.fly();
+        if (bird.flightHeight > 0) {
+            System.out.println("Bird is flying at a positive height.");
+        } else {
+            System.out.println("Error: fly() method called; flight height is still zero.");
+        }
+    }
+
+    public static void main(String[] args) {
+        Sparrow sparrow = new Sparrow("Sparrow");
+        test(sparrow);
+
+        Penguin penguin = new Penguin("Penguin");
+        test(penguin);
+
+        Dodo dodo = new Dodo("Dodo");
+        test(dodo);
+    }
 }
 
 /*
@@ -79,8 +83,6 @@ The sparrow is fluttering its wings.
 Bird is flying at a positive height.
 The penguin cannot fly.
 Error: fly() method called; flight height is still zero.
-The penguin is sliding on its belly!
-The penguin is swimming in the water!
 The dodo is extinct and cannot fly.
 Error: fly() method called; flight height is still zero.
 */

@@ -1,15 +1,14 @@
-public class SwissArmy {
-    
-}
+#include <iostream>
+#include <string>
 
-public class DataProcessor {
-    private String data;
+class DataProcessor {
+private:
+    std::string data;
 
-    public DataProcessor(String data) {
-        this.data = data;
-    }
+public:
+    DataProcessor(std::string data) : data(data) {}
 
-    public void processData() {
+    void processData() {
         validateData();
         cleanData();
         filterData();
@@ -19,39 +18,40 @@ public class DataProcessor {
         formatOutput();
     }
 
-    private void validateData() {
+private:
+    void validateData() {
         // Validation logic
     }
 
-    private void cleanData() {
+    void cleanData() {
         // Data cleaning logic
     }
 
-    private void filterData() {
+    void filterData() {
         // Data filtering logic
     }
 
-    private void sortData() {
+    void sortData() {
         // Data sorting logic
     }
 
-    private void groupData() {
+    void groupData() {
         // Data grouping logic
     }
 
-    private void calculateStatistics() {
+    void calculateStatistics() {
         // Statistics calculation logic
     }
 
-    private void formatOutput() {
+    void formatOutput() {
         // Output formatting logic
     }
+};
 
-    // Example usage
-    public static void main(String[] args) {
-        String data = "exampleData";
-        DataProcessor processor = new DataProcessor(data);
-        processor.processData();
-    }
+// Example usage
+int main() {
+    std::string data = "exampleData";
+    DataProcessor processor(data);
+    processor.processData();
+    return 0;
 }
-

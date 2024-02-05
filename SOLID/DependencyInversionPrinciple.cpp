@@ -1,51 +1,45 @@
-#include <iostream>
-#include <stdexcept>
+import java.util.Objects;
 
-class IMailSender {
-public:
-    virtual void sendMail(const std::string& toAddress, const std::string& fromAddress,
-                           const std::string& subject, const std::string& body) = 0;
-};
+abstract class IMailSender {
+    abstract void sendMail(String toAddress, String fromAddress, String subject, String body);
+}
 
-class SmtpServer : public IMailSender {
-public:
-    void sendMail(const std::string& toAddress, const std::string& fromAddress,
-                  const std::string& subject, const std::string& body) override {
-        std::cout << "Send mail: subject: " << subject << " from: " << fromAddress
-                  << " to: " << toAddress << " body: " << body << std::endl;
+class SmtpServer extends IMailSender {
+    @Override
+    void sendMail(String toAddress, String fromAddress, String subject, String body) {
+        System.out.printf("Send mail: subject: %s from: %s to: %s body: %s%n", subject, fromAddress, toAddress, body);
     }
-};
+}
 
 class EmailSender {
-private:
-    IMailSender* mailSender;
+    private final IMailSender mailSender;
 
-public:
-    explicit EmailSender(IMailSender* mailSender) : mailSender(mailSender) {
-        if (mailSender == nullptr) {
-            throw std::invalid_argument("mailSender must not be null");
-        }
+    public EmailSender(IMailSender mailSender) {
+        this.mailSender = Objects.requireNonNull(mailSender);
     }
 
-    void sendEmail(const std::string& toAddress, const std::string& fromAddress,
-                   const std::string& subject, const std::string& body) {
+    public void sendEmail(String toAddress, String fromAddress, String subject, String body) {
         // Delegate email sending to the mail sender implementation
-        mailSender->sendMail(toAddress, fromAddress, subject, body);
+        mailSender.sendMail(toAddress, fromAddress, subject, body);
     }
-};
+}
 
-int main() {
-    // Create an instance of the SmtpServer class
-    SmtpServer smtpServer;
+// Client code.
+public class DependencyInversionPrinciple {
+    public static void main(String[] args) {
+        // Create an instance of the SmtpServer class
+        SmtpServer smtpServer = new SmtpServer();
 
-    // Create an instance of the EmailSender class and pass in the SmtpServer instance
-    EmailSender emailSender(&smtpServer);
+        // Create an instance of the EmailSender class and pass in the SmtpServer instance
+        EmailSender emailSender = new EmailSender(smtpServer);
 
-    // Send an email using the EmailSender instance
-    emailSender.sendEmail("recipient@example.com", "sender@example.com", "mail subject.",
-                          "This is a test email body.");
-
-    return 0;
+        // Send an email using the EmailSender instance
+        emailSender.sendEmail(
+                "recipient@example.com",
+                "sender@example.com",
+                "mail subject.",
+                "This is a test email body.");
+    }
 }
 
 /*

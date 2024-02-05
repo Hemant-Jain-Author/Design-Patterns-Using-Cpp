@@ -1,76 +1,70 @@
-import java.util.ArrayList;
-import java.util.List;
+#include <iostream>
+#include <vector>
 
 // Data Access Layer
 class DataAccessLayer {
-    private List<String> products;
+private:
+    std::vector<std::string> products;
 
-    public DataAccessLayer() {
-        this.products = new ArrayList<>();
+public:
+    DataAccessLayer() {}
+
+    std::vector<std::string> getData() {
+        return products;
     }
 
-    public List<String> getData() {
-        return this.products;
+    void addData(std::string product) {
+        products.push_back(product);
     }
-
-    public void addData(String product) {
-        this.products.add(product);
-    }
-}
+};
 
 // Business Logic Layer
 class BusinessLogicLayer {
-    private DataAccessLayer dataAccess;
+private:
+    DataAccessLayer* dataAccess;
 
-    public BusinessLogicLayer(DataAccessLayer dataAccess) {
-        this.dataAccess = dataAccess;
+public:
+    BusinessLogicLayer(DataAccessLayer* dataAccess) : dataAccess(dataAccess) {}
+
+    std::vector<std::string> getAllProducts() {
+        return dataAccess->getData();
     }
 
-    public List<String> getAllProducts() {
-        return this.dataAccess.getData();
+    void addProduct(std::string product) {
+        dataAccess->addData(product);
     }
-
-    public void addProduct(String product) {
-        this.dataAccess.addData(product);
-    }
-}
+};
 
 // Presentation Layer
 class PresentationLayer {
-    private BusinessLogicLayer businessLogic;
+private:
+    BusinessLogicLayer* businessLogic;
 
-    public PresentationLayer(BusinessLogicLayer businessLogic) {
-        this.businessLogic = businessLogic;
-    }
+public:
+    PresentationLayer(BusinessLogicLayer* businessLogic) : businessLogic(businessLogic) {}
 
-    public void displayProducts() {
-        List<String> products = this.businessLogic.getAllProducts();
-        for (int i = 0; i < products.size(); i++) {
-            System.out.println((i + 1) + ". " + products.get(i));
+    void displayProducts() {
+        std::vector<std::string> products = businessLogic->getAllProducts();
+        for (size_t i = 0; i < products.size(); i++) {
+            std::cout << (i + 1) << ". " << products[i] << std::endl;
         }
     }
 
-    public void addProduct(String product) {
-        this.businessLogic.addProduct(product);
+    void addProduct(std::string product) {
+        businessLogic->addProduct(product);
     }
+};
+
+// Main function
+int main() {
+    DataAccessLayer dataAccess;
+    BusinessLogicLayer businessLogic(&dataAccess);
+    PresentationLayer presentationLayer(&businessLogic);
+
+    presentationLayer.addProduct("Apple");
+    presentationLayer.addProduct("Banana");
+    presentationLayer.addProduct("Mango");
+    presentationLayer.displayProducts();
+
+    return 0;
 }
-
-// Main class
-public class LayeredPattern {
-    public static void main(String[] args) {
-        DataAccessLayer dataAccess = new DataAccessLayer();
-        BusinessLogicLayer businessLogic = new BusinessLogicLayer(dataAccess);
-        PresentationLayer presentationLayer = new PresentationLayer(businessLogic);
-
-        presentationLayer.addProduct("Apple");
-        presentationLayer.addProduct("Banana");
-        presentationLayer.addProduct("Mango");
-        presentationLayer.displayProducts();
-    }
-}
-
-/*
-1. Apple
-2. Banana
-3. Mango
-*/

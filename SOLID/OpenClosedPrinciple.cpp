@@ -1,92 +1,85 @@
-#include <iostream>
-#include <string>
-
 class Animal {
-private:
-        std::string name;
-public:
-    Animal(const std::string& name) : name(name) {}
-};
+    String name;
 
-class Bird : public Animal {
-public:
-    Bird(const std::string& name) : Animal(name) {}
-    virtual void fly() = 0; // Abstract method
-};
-
-class Dodo : public Bird {
-public:
-    Dodo() : Bird("Dodo") {}
-    void fly() override {
-        std::cout << "The dodo is extinct and cannot fly." << std::endl;
+    public Animal(String name) {
+        this.name = name;
     }
-};
+}
 
-class Penguin : public Bird {
-public:
-    Penguin() : Bird("Penguin") {}
+class Bird extends Animal {
+    public Bird(String name) {
+        super(name);
+    }
 
-    void fly() override {
-        std::cout << "The penguin cannot fly." << std::endl;
+    void fly() {
+        // Abstract method, to be overridden by subclasses
+    }
+}
+
+class Dodo extends Bird {
+    public Dodo() {
+        super("Dodo");
+    }
+
+    @Override
+    void fly() {
+        System.out.println("The dodo is extinct and cannot fly.");
+    }
+}
+
+class Penguin extends Bird {
+    public Penguin() {
+        super("Penguin");
+    }
+
+    @Override
+    void fly() {
+        System.out.println("The penguin cannot fly.");
     }
 
     void slide() {
-        std::cout << "The penguin is sliding on its belly!" << std::endl;
+        System.out.println("The penguin is sliding on its belly!");
     }
 
     void swim() {
-        std::cout << "The penguin is swimming in the water!" << std::endl;
+        System.out.println("The penguin is swimming in the water!");
     }
-};
+}
 
-class Eagle : public Bird {
-public:
-    Eagle() : Bird("Eagle") {}
-
-    void fly() override {
-        std::cout << "The eagle is soaring through the sky!" << std::endl;
-    }
-};
-
-class Sparrow : public Bird {
-public:
-    Sparrow() : Bird("Sparrow") {}
-
-    void fly() override {
-        std::cout << "The sparrow is fluttering its wings!" << std::endl;
-    }
-};
-
-// Pigeon class definition
-class Pigeon : public Bird {
-public:
-    Pigeon() : Bird("Pigeon") {}
-
-    void makeCooingSound() {
-        std::cout << "The pigeon is making a cooing sound." << std::endl;
+class Eagle extends Bird {
+    public Eagle() {
+        super("Eagle");
     }
 
-    void fly() override {
-        std::cout << "The pigeon is fluttering its wings!" << std::endl;
+    @Override
+    void fly() {
+        System.out.println("The eagle is soaring through the sky!");
     }
-};
+}
+
+class Sparrow extends Bird {
+    public Sparrow() {
+        super("Sparrow");
+    }
+
+    @Override
+    void fly() {
+        System.out.println("The sparrow is fluttering its wings!");
+    }
+}
 
 // Client code
-int main() {
-    Bird* bird1 = new Eagle();
-    bird1->fly();
+public class OpenClosedPrinciple {
+    public static void main(String[] args) {
+        Bird bird1 = new Eagle();
+        bird1.fly();
 
-    Bird* bird2 = new Dodo();
-    bird2->fly();
+        Bird bird2 = new Dodo();
+        bird2.fly();
 
-    Bird* bird3 = new Pigeon();
-    bird3->fly();
-
-    delete bird1;
-    delete bird2;
-    delete bird3;
-
-    return 0;
+        Bird bird3 = new Pigeon();
+        bird3.fly();
+    }
 }
 
 /*
@@ -94,3 +87,18 @@ The eagle is soaring through the sky!
 The dodo is extinct and cannot fly.
 The pigeon is fluttering its wings!
 */
+
+class Pigeon extends Bird {
+    public Pigeon() {
+        super("Pigeon");
+    }
+
+    void makeCooingSound() {
+        System.out.println("The pigeon is making a cooing sound.");
+    }
+
+    @Override
+    void fly() {
+        System.out.println("The pigeon is fluttering its wings!");
+    }
+}

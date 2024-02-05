@@ -1,67 +1,67 @@
-#include <iostream>
 
-// Interface definitions
-class Printable {
-public:
-    virtual void print(const std::string& document) = 0;
-};
 
-class Scannable {
-public:
-    virtual void scan() = 0;
-};
+public abstract class Printer {
 
-class Faxable {
-public:
-    virtual void fax(const std::string& document) = 0;
-};
+    public abstract void print(String document);
 
-// Concrete printer classes
-class BasicInkjetPrinter : public Printable, public Scannable {
-public:
-    void print(const std::string& document) override {
-        std::printf("Printing %s using basic inkjet printer\n", document.c_str());
+    public abstract void scan();
+
+    public abstract void fax(String document);
+}
+
+interface Printable {
+    void print(String document);
+}
+
+interface Scannable {
+    void scan();
+}
+
+interface Faxable {
+    void fax(String document);
+}
+
+class BasicInkjetPrinter implements Printable {
+    @Override
+    public void print(String document) {
+        System.out.printf("Printing %s using basic inkjet printer%n", document);
+    }
+}
+
+class HighEndOfficePrinter implements Printable, Scannable, Faxable {
+    @Override
+    public void print(String document) {
+        System.out.printf("Printing %s using high end office printer%n", document);
     }
 
-    void scan() override {
-        std::cout << "Scanning using basic inkjet printer\n";
-    }
-};
-
-class HighEndOfficePrinter : public Printable, public Scannable, public Faxable {
-public:
-    void print(const std::string& document) override {
-        std::printf("Printing %s using high-end office printer\n", document.c_str());
+    @Override
+    public void scan() {
+        System.out.println("Scanning using high end office printer");
     }
 
-    void scan() override {
-        std::cout << "Scanning using high-end office printer\n";
+    @Override
+    public void fax(String document) {
+        System.out.printf("Faxing %s using high end office printer%n", document);
     }
-
-    void fax(const std::string& document) override {
-        std::printf("Faxing %s using high-end office printer\n", document.c_str());
-    }
-};
+}
 
 // Client code
-int main() {
-    // BasicInkjetPrinter
-    BasicInkjetPrinter basicPrinter;
-    basicPrinter.print("Sample Document");
-    basicPrinter.scan();
+public class InterfaceSegregationPrinciple {
+    public static void main(String[] args) {
+        // BasicInkjetPrinter
+        BasicInkjetPrinter basicPrinter = new BasicInkjetPrinter();
+        basicPrinter.print("Sample Document");
 
-    // HighEndOfficePrinter
-    HighEndOfficePrinter officePrinter;
-    officePrinter.print("Important Report");
-    officePrinter.scan();
-    officePrinter.fax("Confidential Memo");
-
-    return 0;
+        // HighEndOfficePrinter
+        HighEndOfficePrinter officePrinter = new HighEndOfficePrinter();
+        officePrinter.print("Important Report");
+        officePrinter.scan();
+        officePrinter.fax("Confidential Memo");
+    }
 }
 
 /*
 Printing Sample Document using basic inkjet printer
-Scanning using basic inkjet printer
 Printing Important Report using high end office printer
 Scanning using high end office printer
 Faxing Confidential Memo using high end office printer

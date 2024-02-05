@@ -1,68 +1,100 @@
-#include <iostream>
 
-class Rectangle {
-private:
-    int height;
-    int width;
+import java.util.*;
 
-public:
-    Rectangle(int l, int w) : height(l), width(w) {}
+abstract class Animal {
+    String name;
 
-    virtual void setWidth(int w) {
-        width = w;
+    public Animal(String name) {
+        this.name = name;
     }
 
-    virtual void setHeight(int h) {
-        height = h;
-    }
-
-    int getWidth() const {
-        return width;
-    }
-
-    int getHeight() const {
-        return height;
-    }
-};
-
-class Square : public Rectangle {
-public:
-    Square(int l) : Rectangle(l, l) {}
-
-    void setWidth(int w) override {
-        Rectangle::setWidth(w);
-        Rectangle::setHeight(w);
-    }
-
-    void setHeight(int h) override {
-        Rectangle::setWidth(h);
-        Rectangle::setHeight(h);
-    }
-};
-
-void testRect(Rectangle& rect) {
-    int expectedArea = 200;
-    rect.setHeight(10);
-    rect.setWidth(20);
-
-    if (expectedArea == rect.getHeight() * rect.getWidth()) {
-        std::cout << "success"<<std::endl;
-    } else {
-        std::cout << "failure"<<std::endl;
+    void makeSound() {
+    	System.out.println("Animal sound");
     }
 }
 
-int main() {
-    // Test Rectangle
-    Rectangle r(10, 20);
-    testRect(r);
+class Dog extends Animal {
+    public Dog(String name) {
+        super(name);
+    }
 
-    // Test Square
-    Square s(10);
-    s.setWidth(20);
-    testRect(s);
+    @Override
+    void makeSound() {
+        System.out.println("woof woof!");
+    }
+}
 
-    return 0;
+class Cat extends Animal {
+    public Cat(String name) {
+        super(name);
+    }
+
+    @Override
+    void makeSound() {
+        System.out.println("meow!");
+    }
+}
+
+class Rectangle {
+    private int height;
+    private int width;
+
+    public Rectangle(int l, int w) {
+        this.height = l;
+        this.width = w;
+    }
+
+    public void setWidth(int w) {
+        this.width = w;
+    }
+
+    public void setHeight(int h) {
+        this.height = h;
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public int getHeight() {
+        return this.height;
+    }
+}
+
+class Square extends Rectangle {
+    public Square(int l) {
+        super(l, l);
+    }
+
+    @Override
+    public void setWidth(int w) {
+        super.setWidth(w);
+        super.setHeight(w);
+    }
+
+    @Override
+    public void setHeight(int h) {
+        super.setWidth(h);
+        super.setHeight(h);
+    }
+}
+
+public class LiskovSubstitutionPrinciple {
+    private static void testRect(Rectangle rect) {
+        rect.setHeight(10);
+        rect.setWidth(20);
+        if(200 == rect.getHeight() * rect.getWidth())
+            System.out.println("success");
+        else
+            System.out.println("failure");
+    }
+
+    public static void main(String[] args) {
+    	Rectangle r = new Rectangle(10, 20);
+    	testRect(r);
+    	Square s = new Square(10);
+    	testRect(s);
+    }
 }
 
 /*
