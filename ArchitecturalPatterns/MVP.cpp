@@ -52,6 +52,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     Model model;
     View view;

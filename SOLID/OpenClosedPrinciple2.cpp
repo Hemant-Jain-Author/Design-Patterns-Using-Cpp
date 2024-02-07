@@ -26,6 +26,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     Bird bird1("Eagle");
     bird1.fly();

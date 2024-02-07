@@ -42,6 +42,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     LazyBookParserProxy proxy;
     std::cout << proxy.numPages() << std::endl;

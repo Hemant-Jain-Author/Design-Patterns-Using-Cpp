@@ -55,7 +55,7 @@ public:
     }
 };
 
-// Main function
+// Client code
 int main() {
     DataAccessLayer dataAccess;
     BusinessLogicLayer businessLogic(&dataAccess);

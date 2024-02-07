@@ -49,8 +49,8 @@ private:
     }
 };
 
+// Client code
 int main() {
-    // Example usage
     AddDataTemplate* addDataToDB = new AddDataToDB();
     addDataToDB->addData();
 

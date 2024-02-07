@@ -41,8 +41,8 @@ public:
     }
 };
 
+// Client code
 int main() {
-    // Example usage
     ConcreteStrategy1 strategy1;
     Context context1(&strategy1);
     context1.execute();

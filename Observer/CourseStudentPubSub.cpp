@@ -48,6 +48,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     Courses courses;
     Student john("John");

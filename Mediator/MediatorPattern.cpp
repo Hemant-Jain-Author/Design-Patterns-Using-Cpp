@@ -82,6 +82,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     ChatRoom chatRoom;
     Participant james("James", &chatRoom);

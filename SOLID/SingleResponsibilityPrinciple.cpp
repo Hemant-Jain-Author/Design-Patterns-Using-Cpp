@@ -52,6 +52,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     Mammal animal1("Cat");
     animal1.giveBirth();

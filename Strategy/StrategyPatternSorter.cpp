@@ -62,8 +62,8 @@ public:
     }
 };
 
+// Client code
 int main() {
-    // Example usage
     std::vector<int> a = {4, 5, 3, 2, 6, 7, 1, 8, 9, 10};
     StrategyClass s(new BubbleSort());
     s.sort(a);

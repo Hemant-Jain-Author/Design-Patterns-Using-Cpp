@@ -68,6 +68,7 @@ void test(Bird* bird) {
     }
 }
 
+// Client code
 int main() {
     Sparrow sparrow("Sparrow");
     test(&sparrow);

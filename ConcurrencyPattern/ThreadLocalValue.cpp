@@ -42,6 +42,7 @@ public:
 // Initialize thread-local variable
 thread_local std::string ThreadLocalValue::tlsVar;
 
+// Client code
 int main() {
     ThreadLocalValue::main();
     return 0;

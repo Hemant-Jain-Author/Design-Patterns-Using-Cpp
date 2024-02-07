@@ -46,8 +46,8 @@ void ConcreteState2::handle(Context& context) {
     context.changeState(new ConcreteState1());
 }
 
+// Client code
 int main() {
-    // Example usage
     State* state1 = new ConcreteState1();
     Context context(state1);
 

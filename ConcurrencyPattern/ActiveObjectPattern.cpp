@@ -69,7 +69,7 @@ public:
     }
 };
 
-// Example usage
+// Client code
 int main() {
     // Create an instance of ActiveObject and Proxy
     ActiveObject activeObject;

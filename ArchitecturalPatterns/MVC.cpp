@@ -102,7 +102,7 @@ void View::getUserInput()
     controller->handleUserInput(userInput);
 }
 
-// Main function
+// Client code
 int main() {
     Model model;
     Controller controller(&model);

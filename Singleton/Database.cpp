@@ -84,6 +84,7 @@ public:
 
 Database* Database::_instance = nullptr;
 
+// Client code
 int main() {
     Database* db1 = Database::getInstance();
     Database* db2 = Database::getInstance();

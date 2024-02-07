@@ -24,6 +24,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     ImmutablePerson person("John Doe", 30, "Male");
     ImmutablePerson newPerson("John Doe", 31, "Male");

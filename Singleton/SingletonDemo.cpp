@@ -35,6 +35,7 @@ public:
 
 Singleton* Singleton::instance = nullptr;
 
+// Client code
 int main() {
     Singleton* s1 = Singleton::getInstance();
     Singleton* s2 = Singleton::getInstance();

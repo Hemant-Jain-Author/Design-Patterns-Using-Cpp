@@ -62,7 +62,7 @@ public:
     }
 };
 
-// Usage
+// Client code
 int main() {
     DrawingAPI* windowsAPI = new WindowsAPI();
     DrawingAPI* macAPI = new MacAPI();

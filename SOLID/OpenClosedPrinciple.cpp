@@ -73,6 +73,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     Bird* bird1 = new Eagle();
     bird1->fly();

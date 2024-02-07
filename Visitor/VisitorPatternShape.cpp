@@ -113,8 +113,8 @@ public:
     }
 };
 
+// Client code
 int main() {
-    // Example usage
     ObjectsStructure os;
     os.addShape(new Rectangle(6, 7, 8, 9));
     os.addShape(new Circle(6, 7, 8));

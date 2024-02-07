@@ -79,6 +79,7 @@ void testRect(Rectangle& rect) {
         std::cout << "failure" << std::endl;
 }
 
+// Client code
 int main() {
     Rectangle r(10, 20);
     testRect(r);

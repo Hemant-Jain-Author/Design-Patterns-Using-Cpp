@@ -67,8 +67,8 @@ private:
     }
 };
 
+// Client code
 int main() {
-    // Example usage
     AbstractWorker* doctor = new Doctor();
     doctor->dailyRoutine();
     std::cout << std::endl;

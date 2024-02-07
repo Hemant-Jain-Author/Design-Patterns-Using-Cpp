@@ -61,6 +61,7 @@ public:
 
 std::unordered_map<std::string, Shape*> ShapeRegistry::shapes;
 
+// Client code
 int main() {
     ShapeRegistry::load();
 

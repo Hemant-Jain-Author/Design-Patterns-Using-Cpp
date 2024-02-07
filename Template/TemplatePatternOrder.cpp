@@ -39,8 +39,8 @@ private:
     }
 };
 
+// Client code
 int main() {
-    // Example usage
     OrderPackingTemplate* onlineOrder = new OnlineOrderPacking();
     onlineOrder->packProduct();
     std::cout << std::endl;

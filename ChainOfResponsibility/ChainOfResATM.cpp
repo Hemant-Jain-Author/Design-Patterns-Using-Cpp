@@ -31,11 +31,10 @@ public:
     }
 };
 
+// Client code
 int main() {
     ATMHandlerAbstract* handler = new ATMHandler(
-        new ATMHandler(
-            new ATMHandler(
-                new ATMHandler(nullptr, 10), 50
+        new ATMHandler( new ATMHandler(new ATMHandler(nullptr, 10), 50
             ), 100
         ), 1000
     );

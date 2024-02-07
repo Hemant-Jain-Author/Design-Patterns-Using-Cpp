@@ -61,6 +61,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     Panel p;
     p.setHelperText("Panel help text.");

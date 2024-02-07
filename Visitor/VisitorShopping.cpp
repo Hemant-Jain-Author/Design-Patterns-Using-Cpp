@@ -110,8 +110,8 @@ public:
     }
 };
 
+// Client code
 int main() {
-    // Example usage
     ShoppingCart cart;
     cart.add(new Fruit(100, 10, "Apple"));
     cart.add(new Book(100, 12345));

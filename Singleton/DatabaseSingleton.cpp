@@ -36,6 +36,7 @@ public:
 
 DatabaseSingleton* DatabaseSingleton::instance = nullptr;
 
+// Client code
 int main() {
     DatabaseSingleton* db1 = DatabaseSingleton::getInstance();
     DatabaseSingleton* db2 = DatabaseSingleton::getInstance();

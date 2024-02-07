@@ -1,22 +1,25 @@
 #include <iostream>
+#include <string>
 #include <unordered_map>
 
-// Flyweight interface
+// Flyweight abstract class
 class Flyweight {
+protected:
+    std::string intrinsicState;
+
 public:
+    Flyweight(const std::string& intrinsicState) : intrinsicState(intrinsicState) {}
+
     virtual void operation(const void* extrinsicState) = 0;
 };
 
 // Concrete Flyweight class
 class ConcreteFlyweight : public Flyweight {
-private:
-    std::string intrinsicState;
-
 public:
-    ConcreteFlyweight(const std::string& intrinsicState) : intrinsicState(intrinsicState) {}
+    ConcreteFlyweight(const std::string& intrinsicState) : Flyweight(intrinsicState) {}
 
     void operation(const void* extrinsicState) override {
-        std::cout << "Operation inside concrete flyweight" << std::endl;
+        std::cout << "Operation inside concrete flyweight\n";
     }
 };
 
@@ -38,8 +41,8 @@ public:
     }
 
     ~FlyweightFactory() {
-        for (const auto& entry : flyweights) {
-            delete entry.second;
+        for (auto& pair : flyweights) {
+            delete pair.second;
         }
     }
 };
@@ -49,14 +52,13 @@ int main() {
     FlyweightFactory factory;
     Flyweight* flyweight1 = factory.getFlyweight("key");
     Flyweight* flyweight2 = factory.getFlyweight("key");
-
     flyweight1->operation(nullptr);
-
     std::cout << flyweight1 << " " << flyweight2 << std::endl;
     std::cout << "Object count: " << factory.getCount() << std::endl;
 
     return 0;
 }
+
 
 /*
 Operation inside concrete flyweight

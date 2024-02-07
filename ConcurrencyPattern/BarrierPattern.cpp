@@ -46,6 +46,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     int numWorkers = 3;
     Barrier barrier(numWorkers);

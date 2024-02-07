@@ -61,7 +61,7 @@ Iterator* ConcreteAggregate::getIterator() {
     return new ConcreteIterator(this);
 }
 
-
+// Client code
 int main() {
     ConcreteAggregate aggregate;
     for (int i = 0; i < 5; i++) {

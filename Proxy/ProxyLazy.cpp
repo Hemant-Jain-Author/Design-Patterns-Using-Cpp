@@ -31,6 +31,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     Proxy proxy;
     proxy.request();

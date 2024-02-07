@@ -56,9 +56,9 @@ public:
     }
 };
 
+// Client code
 int main() {
     Publisher pub;
-
     Subscriber sub1("Subscriber1");
     Subscriber sub2("Subscriber2");
     Subscriber sub3("Subscriber3");

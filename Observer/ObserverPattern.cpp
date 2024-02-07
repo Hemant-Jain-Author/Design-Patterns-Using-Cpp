@@ -84,6 +84,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     ConcreteSubject subject;
     ConcreteObserver1 observer1(&subject);

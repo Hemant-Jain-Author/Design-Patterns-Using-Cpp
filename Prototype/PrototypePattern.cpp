@@ -54,6 +54,7 @@ public:
 
 std::unordered_map<std::string, Prototype*> PrototypeRegistry::prototypes;
 
+// Client code
 int main() {
     PrototypeRegistry::load();
 

@@ -58,8 +58,8 @@ public:
     }
 };
 
+// Client code
 int main() {
-    // Example usage
     Visitor* visitor1 = new ConcreteVisitor1();
     Element* elementA = new ConcreteElementA();
     elementA->accept(*visitor1);

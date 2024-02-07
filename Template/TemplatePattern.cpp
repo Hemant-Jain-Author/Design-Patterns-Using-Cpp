@@ -39,8 +39,8 @@ private:
     }
 };
 
+// Client code
 int main() {
-    // Example usage
     AbstractClass* concreteClass = new ConcreteClass1();
     concreteClass->templateMethod();
 

@@ -55,6 +55,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     ConcreteMediator mediator;
     ConcreteColleague first("First", &mediator);

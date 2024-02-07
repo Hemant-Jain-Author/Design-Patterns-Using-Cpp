@@ -69,6 +69,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     ConcreteMediator mediator;
     ConcreteColleague1 first(&mediator);

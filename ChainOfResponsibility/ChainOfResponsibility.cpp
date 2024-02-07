@@ -38,6 +38,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     ConcreteHandler1* ch1 = new ConcreteHandler1(nullptr);
     ConcreteHandler2* ch2 = new ConcreteHandler2(ch1);

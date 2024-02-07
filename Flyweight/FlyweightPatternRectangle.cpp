@@ -1,35 +1,35 @@
 #include <iostream>
-#include <unordered_map>
-#include <string>
-#include <cstdlib>
+#include <map>
+#include <random>
 
-// Shape interface
+// Shape abstract class
 class Shape {
+protected:
+    int colour; // Intrinsic State
+
 public:
-    virtual void draw(int x1, int y1, int x2, int y2) const = 0;
+    Shape(int colour) : colour(colour) {}
+
+    virtual void draw(int x1, int y1, int x2, int y2) = 0; // Extrinsic State
 };
 
-// Rectangle class implementing Shape
+// Rectangle class
 class Rectangle : public Shape {
-private:
-    std::string colour;
-
 public:
-    Rectangle(const std::string& colour) : colour(colour) {}
+    Rectangle(int colour) : Shape(colour) {}
 
-    void draw(int x1, int y1, int x2, int y2) const override {
-        std::cout << "Draw rectangle colour: " << colour
-                  << " topleft: (" << x1 << "," << y1 << ") rightBottom: (" << x2 << "," << y2 << ")\n";
+    void draw(int x1, int y1, int x2, int y2) override {
+        std::cout << "Draw Rectangle colour:" << colour << " topleft: (" << x1 << "," << y1 << ") rightBottom: (" << x2 << "," << y2 << ")\n";
     }
 };
 
 // RectangleFactory class
 class RectangleFactory {
 private:
-    std::unordered_map<std::string, Shape*> shapes;
+    std::map<int, Shape*> shapes;
 
 public:
-    Shape* getRectangle(const std::string& colour) {
+    Shape* getRectangle(int colour) {
         if (shapes.find(colour) == shapes.end()) {
             shapes[colour] = new Rectangle(colour);
         }
@@ -41,8 +41,8 @@ public:
     }
 
     ~RectangleFactory() {
-        for (const auto& entry : shapes) {
-            delete entry.second;
+        for (auto& pair : shapes) {
+            delete pair.second;
         }
     }
 };
@@ -50,11 +50,13 @@ public:
 // Client code
 int main() {
     RectangleFactory factory;
-    srand(time(nullptr));
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<int> dis(0, 999);
 
-    for (int i = 0; i < 100; i++) {
-        Shape* rectangle = factory.getRectangle(std::to_string(rand() % 1000));
-        rectangle->draw(rand() % 100, rand() % 100, rand() % 100, rand() % 100);
+    for (int i = 0; i < 1000; ++i) {
+        Shape* rect = factory.getRectangle(dis(gen));
+        rect->draw(dis(gen), dis(gen), dis(gen), dis(gen));
     }
 
     std::cout << factory.getCount() << std::endl;

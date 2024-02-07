@@ -57,6 +57,7 @@ public:
     }
 };
 
+// Client code
 int main() {
     Model model;
     ViewModel viewModel(&model);

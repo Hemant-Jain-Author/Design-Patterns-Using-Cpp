@@ -37,9 +37,7 @@ public:
 int main() {
     AbstractExpression* tree = new NonterminalExpression(new TerminalExpression());
     tree->interpret();
-
     delete tree;
-
     return 0;
 }
 

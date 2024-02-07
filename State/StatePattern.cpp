@@ -67,8 +67,8 @@ std::string Off::toString() const {
     return "Off";
 }
 
+// Client code
 int main() {
-    // Example usage
     BulbControl c;
     c.flip();
     std::cout << c.toStringState() << std::endl;
